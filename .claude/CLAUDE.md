@@ -47,55 +47,12 @@ npm run test:coverage # カバレッジ付きテスト
 
 ---
 
-## TDD: Red → Green → Refactor → Feedback
+## ルール
 
-### 必須プロセス
-1. **RED**: 失敗するテストを先に書く
-2. **GREEN**: 最小限のコードでテストを通す（美しさは後回し）
-3. **REFACTOR**: 必ず実施。重複除去、命名改善、責務分離
-4. **FEEDBACK**: 実装中の気づきを設計に反映
-
-### Refactorを省略しない
-Claudeは一発で動くコードを書きがちだが、TDDの本質的価値は
-「実装しながらの気づきによる設計へのフィードバック」である。
-
-各機能実装後、必ず以下を確認：
-- [ ] 重複コードはないか？
-- [ ] 責務は単一か？
-- [ ] 命名は意図を表しているか？
-- [ ] テストは読みやすいか？
-- [ ] 型定義やSPEC.mdに反映すべき気づきはないか？
-
-### テストが書きにくい = 設計の問題
-テストが書きにくいと感じたら、それは設計に問題がある兆候。
-無理にテストを書くのではなく、設計を見直す。
-
----
-
-## コミットルール
-
-### タスク完了ごとにコミット
-大きな変更を溜め込まない。細かくコミットする。
-
-### コミットメッセージ形式
-```
-<type>: <description>
-
-🤖 Generated with Claude Code
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-type: feat, fix, test, refactor, docs, chore
-
----
-
-## 作業報告
-約5コミットごと、または機能単位完了時に GitHub Issue で報告。
-
-```bash
-gh issue create --title "進捗報告: <Phase名> - <概要>" --body "..."
-```
+開発プロセスのルールは `.claude/rules/` を参照:
+- `tdd.md` - TDDサイクル・チェックリスト
+- `git.md` - コミットルール
+- `github-issue.md` - 作業報告ルール
 
 ---
 
