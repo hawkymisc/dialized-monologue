@@ -129,29 +129,49 @@ TDDサイクル・チェックリストは `.claude/rules/tdd.md` を参照。
 
 ### 実装順序
 
-#### Step 1: 基盤層
-1. **型定義** (`types/`) - DiaryEntry, Question, Settings
-2. **ストレージサービス** (`services/storage.ts`) - AsyncStorage wrapper
-   - → Refactor後: 型定義の使い勝手を評価、必要なら修正
+#### Step 1: 基盤層 ✅ 完了
+1. ✅ **型定義** (`types/`) - DiaryEntry, Question, Settings
+   - テスト: 100%カバレッジ
+   - Refactor完了: 型ガード関数、ファクトリ関数を追加
+2. ✅ **ストレージサービス** (`services/storage.ts`) - AsyncStorage wrapper
+   - テスト: 100%カバレッジ
+   - Refactor完了: エラーハンドリング統一
 
-#### Step 2: ドメインロジック
-3. **日記ストア** (`stores/diaryStore.ts`) - CRUD操作
-4. **質問ストア** (`stores/questionStore.ts`) - 質問管理
-5. **設定ストア** (`stores/settingsStore.ts`) - リマインダー時間等
-   - → Refactor後: ストア間の共通パターンを抽出検討
+#### Step 2: ドメインロジック ✅ 完了
+3. ✅ **日記ストア** (`stores/diaryStore.ts`) - CRUD操作
+   - テスト: 88.88%カバレッジ
+4. ✅ **質問ストア** (`stores/questionStore.ts`) - 質問管理
+   - テスト: 84.31%カバレッジ
+5. ✅ **設定ストア** (`stores/settingsStore.ts`) - リマインダー時間等
+   - テスト: 83.67%カバレッジ
+   - Refactor完了: ストア構造の統一
 
-#### Step 3: サービス層
-6. **通知サービス** (`services/notification.ts`) - リマインダー
-7. **音声認識サービス** (`services/speech.ts`) - 音声→テキスト
-8. **エクスポートサービス** (`services/export.ts`) - JSON/CSV出力
-   - → Refactor後: エラーハンドリングパターンの統一
+#### Step 3: サービス層 ✅ 完了
+6. ✅ **通知サービス** (`services/notification.ts`) - リマインダー
+   - テスト: 96%カバレッジ
+7. ✅ **音声認識サービス** (`services/speech.ts`) - 音声→テキスト
+   - テスト: 100%カバレッジ
+8. ✅ **エクスポートサービス** (`services/export.ts`) - JSON/CSV出力
+   - テスト: 100%カバレッジ
+   - RFC 4180準拠のCSVエスケープ実装
+   - Refactor完了: `generateExportFilename()`をdate.tsから再利用
+9. ✅ **日付ユーティリティ** (`utils/date.ts`) - 日付操作
+   - テスト: 96.87%カバレッジ
+   - date-fnsライブラリ活用
 
-#### Step 4: UI層
-9. **入力コンポーネント** - テキスト/音声切替
-10. **日記一覧画面** - 過去の日記表示
-11. **日記入力画面** - 質問に回答
-12. **設定画面** - リマインダー時間設定
+#### Step 4: UI層 🔄 着手中
+10. ✅ **基本UIコンポーネント** (`components/Button.tsx`)
+    - variant対応（primary/secondary/outline）
+    - アクセシビリティ対応
+    - 注: React Nativeテスト環境の課題により、テスト実行は保留
+11. ⏳ **TextInputコンポーネント** - テキスト入力
+12. ⏳ **入力コンポーネント** - テキスト/音声切替
+13. ⏳ **日記一覧画面** - 過去の日記表示
+14. ⏳ **日記入力画面** - 質問に回答
+15. ⏳ **設定画面** - リマインダー時間設定
     - → Refactor後: 共通UIパターンのコンポーネント化
+
+**次のステップ**: 詳細は `NEXT_STEPS.md` を参照
 
 ---
 
