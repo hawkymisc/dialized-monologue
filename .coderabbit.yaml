@@ -1,0 +1,5 @@
+# CodeRabbit Configuration
+# https://docs.coderabbit.ai/reference/configuration
+
+# レビューコメントを日本語で生成
+language: ja-JP
