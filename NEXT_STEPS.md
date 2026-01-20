@@ -7,55 +7,40 @@
 ### ✅ 完了済み
 - **Phase 1-3**: 要件定義、プロジェクトセットアップ完了
 - **Phase 4 Step 1-3**: 基盤層、ドメインロジック、サービス層完了
-- **テスト**: 133テストケース全てパス、カバレッジ93.05%
+- **React Nativeテスト環境**: ✅ 修正完了（詳細は下記）
+- **テスト**: 143テストケース全てパス、カバレッジ向上
 - **PR #7**: エクスポートサービス・日付ユーティリティ・Buttonコンポーネント実装
   - CodeRabbitレビュー対応済み
+  - React Nativeテスト環境問題も解決済み
   - マージ待ち
 
 ### 🔄 進行中
 - **Phase 4 Step 4**: UI層の実装
 
-### ⚠️ 既知の課題
-- **React Nativeテスト環境**: Expo SDK 54のWinter runtimeとjest-expoの互換性問題
-  - UIコンポーネントのテストが実行できない
-  - 次セッションで優先的に対応が必要
+### ✅ 解決済み: React Nativeテスト環境問題
+
+**問題**: Expo SDK 54 Winter runtimeとjest-expoの互換性問題
+
+**解決方法**:
+1. jest.config.js に `preset: 'jest-expo'` を設定
+2. Jestを29.7.0にダウングレード（expo install --checkの推奨）
+3. @types/jestを29.5.14にダウングレード
+4. transformIgnorePatternsは既に適切に設定済み
+
+**結果**:
+- ✅ Button.test.tsx が正常に実行可能（10テスト全てパス）
+- ✅ 全143テストがパス（133 + 10件のButtonテスト）
+- ✅ React Nativeコンポーネントのテスト環境が構築完了
 
 ---
 
 ## 🎯 次回セッションの優先タスク
 
-### Task 1: React Nativeテスト環境の修正 🔴 高優先度
+### ✅ Task 1: React Nativeテスト環境の修正 - 完了済み
 
-#### 問題の詳細
-```
-jest-expo と Expo SDK 54 Winter runtime の互換性問題により、
-@testing-library/react-native を使用するテストが実行できない。
+Button.test.tsx が正常に実行されることを確認済み。
 
-エラー:
-ReferenceError: You are trying to `import` a file outside of the scope of the test code.
-```
-
-#### 調査・対応方針
-
-1. **Option A: jest-expo設定の調整**
-   - jest-expoの最新版を確認
-   - transformIgnorePatterns の見直し
-   - setupFilesの追加設定
-
-2. **Option B: カスタムテスト環境の構築**
-   - jest-expoを使わず、ts-jestベースで構築
-   - React Native modulesの変換設定を手動で追加
-   - @testing-library/react-nativeの動作確認
-
-3. **Option C: Expo SDK 53へのダウングレード（非推奨）**
-   - 最終手段として検討
-
-#### 成果物
-- [ ] UIコンポーネントのテストが実行可能になる
-- [ ] Button.test.tsx が正常に実行される
-- [ ] 設定方法をREADMEまたはドキュメントに記載
-
----
+### ~~Task 2: TextInputコンポーネントの実装~~ → **次のタスク**
 
 ### Task 2: TextInputコンポーネントの実装
 
@@ -93,7 +78,7 @@ interface TextInputProps {
 
 ---
 
-### Task 3: 基本UIコンポーネントの完成
+### Task 2: 基本UIコンポーネントの完成
 
 TextInputとButton以外に必要な基本コンポーネント：
 
@@ -115,9 +100,9 @@ TextInputとButton以外に必要な基本コンポーネント：
 
 ---
 
-### Task 4: 画面コンポーネントの実装開始
+### Task 3: 画面コンポーネントの実装開始
 
-#### 4.1 HomeScreen（日記一覧画面）
+#### 3.1 HomeScreen（日記一覧画面）
 **優先度**: 🔴 高
 
 **機能要件**:
@@ -139,7 +124,7 @@ TextInputとButton以外に必要な基本コンポーネント：
 - エントリータップ時のナビゲーション
 - 新規作成ボタンの動作
 
-#### 4.2 DiaryEntryScreen（日記入力画面）
+#### 3.2 DiaryEntryScreen（日記入力画面）
 **優先度**: 🔴 高
 
 **機能要件**:
@@ -163,7 +148,7 @@ TextInputとButton以外に必要な基本コンポーネント：
 - 保存処理
 - 音声入力切替
 
-#### 4.3 SettingsScreen（設定画面）
+#### 3.3 SettingsScreen（設定画面）
 **優先度**: 🟡 中
 
 **機能要件**:
