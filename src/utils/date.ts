@@ -8,7 +8,7 @@ import {
   startOfDay,
   addDays,
   differenceInDays,
-  isSameDay,
+  isAfter,
 } from 'date-fns';
 
 /**
@@ -65,7 +65,7 @@ export function getDateRange(start: Date, end: Date): string[] {
   const endDay = startOfDay(end);
 
   // start > end の場合は空配列
-  if (startDay > endDay) {
+  if (isAfter(startDay, endDay)) {
     return [];
   }
 

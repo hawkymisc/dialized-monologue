@@ -3,6 +3,7 @@
  */
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import { generateExportFilename as generateBasename } from '../utils/date';
 import type { DiaryEntry } from '../types';
 
 /**
@@ -29,8 +30,7 @@ function escapeCSVField(field: string | number): string {
  * デフォルトのエクスポートファイル名を生成
  */
 function generateDefaultFilename(prefix: string, extension: string): string {
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  return `${prefix}_${today}.${extension}`;
+  return `${generateBasename(prefix)}.${extension}`;
 }
 
 export const ExportService = {

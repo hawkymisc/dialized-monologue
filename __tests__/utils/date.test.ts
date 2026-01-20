@@ -136,7 +136,8 @@ describe('date utils', () => {
   describe('generateExportFilename', () => {
     beforeAll(() => {
       jest.useFakeTimers();
-      jest.setSystemTime(new Date('2025-01-20T12:00:00Z'));
+      // ローカルタイムゾーンで2025-01-20にセット
+      jest.setSystemTime(new Date(2025, 0, 20, 12, 0, 0));
     });
 
     afterAll(() => {
