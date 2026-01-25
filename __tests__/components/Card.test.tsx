@@ -106,6 +106,20 @@ describe('Card', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
+  it('disabled=true時にopacity 0.5で半透明になる', () => {
+    const { getByTestId } = render(
+      <Card onPress={() => {}} disabled={true} testID="card">
+        <Text>コンテンツ</Text>
+      </Card>
+    );
+
+    const card = getByTestId('card');
+    const style = StyleSheet.flatten(card.props.style);
+
+    expect(style.opacity).toBe(0.5);
+    expect(card.props.accessibilityState?.disabled).toBe(true);
+  });
+
   it('onPress未指定時にタップ不可', () => {
     const { getByTestId } = render(
       <Card testID="card">

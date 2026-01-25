@@ -44,9 +44,10 @@ export const Card: React.FC<CardProps> = ({
     }
   };
 
-  const cardStyle = [
+  const cardStyle: ViewStyle[] = [
     styles.card,
     variant === 'elevated' ? styles.card_elevated : styles.card_default,
+    isDisabled && styles.card_disabled,
   ].filter(Boolean) as ViewStyle[];
 
   // タップ可能な場合はPressableでラップ
@@ -61,7 +62,7 @@ export const Card: React.FC<CardProps> = ({
         testID={testID}
         style={({ pressed }) => [
           ...cardStyle,
-          pressed && styles.card_pressed,
+          pressed && !isDisabled && styles.card_pressed,
         ]}
       >
         {children}
@@ -99,6 +100,7 @@ const ELEVATION_STYLES = Platform.select({
 const BORDER_RADIUS = 8;
 const PADDING = 16;
 const BORDER_WIDTH = 1;
+const DISABLED_OPACITY = 0.5;
 
 const styles = StyleSheet.create({
   card: {
@@ -115,5 +117,8 @@ const styles = StyleSheet.create({
   },
   card_pressed: {
     backgroundColor: COLORS.pressed,
+  },
+  card_disabled: {
+    opacity: DISABLED_OPACITY,
   },
 });

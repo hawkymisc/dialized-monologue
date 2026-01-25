@@ -35,8 +35,10 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
+    let animation: Animated.CompositeAnimation | null = null;
+
     if (recording) {
-      Animated.loop(
+      animation = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
             toValue: 1.2,
@@ -49,10 +51,18 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
             useNativeDriver: true,
           }),
         ])
-      ).start();
+      );
+      animation.start();
     } else {
       pulseAnim.setValue(1);
     }
+
+    return () => {
+      if (animation) {
+        animation.stop();
+      }
+      pulseAnim.setValue(1);
+    };
   }, [recording, pulseAnim]);
 
   const isDisabled = disabled;
