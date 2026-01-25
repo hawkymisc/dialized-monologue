@@ -147,4 +147,118 @@ describe('Card', () => {
     const cardWithoutPress = getByTestIdWithoutPress('card-without-press');
     expect(cardWithoutPress.props.accessibilityRole).toBe('none');
   });
+
+  // エッジケース・異常系テスト
+  describe('エッジケース', () => {
+    it('onPress指定時かつdisabled=trueの場合、onPressが呼ばれない', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <Card onPress={onPress} disabled={true} testID="card">
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      fireEvent.press(getByTestId('card'));
+
+      expect(onPress).not.toHaveBeenCalled();
+      expect(getByTestId('card').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('variant未指定時はdefaultが適用される', () => {
+      const { getByTestId } = render(
+        <Card testID="card">
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      const card = getByTestId('card');
+      const style = StyleSheet.flatten(card.props.style);
+
+      // defaultスタイル（枠線）が適用される
+      expect(style.borderWidth).toBe(1);
+      expect(style.borderColor).toBe('#CCCCCC');
+    });
+
+    it('childrenが空でもレンダリングできる', () => {
+      const { getByTestId } = render(
+        <Card testID="card">
+          <></>
+        </Card>
+      );
+
+      expect(getByTestId('card')).toBeTruthy();
+    });
+
+    it('children が複数の要素を含むことができる', () => {
+      const { getByText } = render(
+        <Card testID="card">
+          <Text>タイトル</Text>
+          <Text>本文</Text>
+          <Text>フッター</Text>
+        </Card>
+      );
+
+      expect(getByText('タイトル')).toBeTruthy();
+      expect(getByText('本文')).toBeTruthy();
+      expect(getByText('フッター')).toBeTruthy();
+    });
+
+    it('testIDなしでもレンダリングできる', () => {
+      const { getByText } = render(
+        <Card>
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      expect(getByText('コンテンツ')).toBeTruthy();
+    });
+
+    it('カスタムaccessibilityLabelが適用される', () => {
+      const { getByTestId } = render(
+        <Card testID="card" accessibilityLabel="日記カード">
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      const card = getByTestId('card');
+      expect(card.props.accessibilityLabel).toBe('日記カード');
+    });
+
+    it('onPressを複数回連続で呼んでも正常に動作する', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <Card onPress={onPress} testID="card">
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      const card = getByTestId('card');
+      fireEvent.press(card);
+      fireEvent.press(card);
+      fireEvent.press(card);
+
+      expect(onPress).toHaveBeenCalledTimes(3);
+    });
+
+    it('variant="elevated"とonPressの組み合わせが正常に動作する', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <Card variant="elevated" onPress={onPress} testID="card">
+          <Text>コンテンツ</Text>
+        </Card>
+      );
+
+      const card = getByTestId('card');
+
+      // タップ可能
+      fireEvent.press(card);
+      expect(onPress).toHaveBeenCalledTimes(1);
+
+      // elevatedスタイルも適用されている
+      const style = StyleSheet.flatten(card.props.style);
+      if (Platform.OS === 'ios') {
+        expect(style.shadowColor).toBe('#000000');
+      }
+    });
+  });
 });

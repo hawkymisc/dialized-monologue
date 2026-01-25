@@ -190,4 +190,154 @@ describe('ListItem', () => {
     const listItem = getByTestId('list-item');
     expect(listItem.props.accessibilityHint).toBe('2025-01-25');
   });
+
+  // エッジケース・異常系テスト
+  describe('エッジケース', () => {
+    it('titleが空文字列でもレンダリングできる', () => {
+      const { getByTestId } = render(
+        <ListItem title="" onPress={() => {}} testID="list-item" />
+      );
+
+      expect(getByTestId('list-item')).toBeTruthy();
+    });
+
+    it('titleが非常に長い文字列でもレンダリングできる', () => {
+      const longTitle = 'A'.repeat(1000);
+      const { getByText } = render(
+        <ListItem title={longTitle} onPress={() => {}} />
+      );
+
+      expect(getByText(longTitle)).toBeTruthy();
+    });
+
+    it('subtitleが空文字列の場合は表示されない', () => {
+      const { queryByText, getByText } = render(
+        <ListItem title="タイトル" subtitle="" onPress={() => {}} />
+      );
+
+      expect(getByText('タイトル')).toBeTruthy();
+      // 空のsubtitleは表示されない（subtitle && <Text>の条件により）
+      expect(queryByText('')).toBeNull();
+    });
+
+    it('subtitleがundefinedの場合は表示されない', () => {
+      const { getByTestId } = render(
+        <ListItem title="タイトル" onPress={() => {}} testID="list-item" />
+      );
+
+      // accessibilityHintもundefinedになる
+      const listItem = getByTestId('list-item');
+      expect(listItem.props.accessibilityHint).toBeUndefined();
+    });
+
+    it('disabled=true かつ showArrow=false の組み合わせが正常に動作する', () => {
+      const onPress = jest.fn();
+      const { getByTestId, queryByText } = render(
+        <ListItem
+          title="タイトル"
+          onPress={onPress}
+          disabled={true}
+          showArrow={false}
+          testID="list-item"
+        />
+      );
+
+      // タップできない
+      fireEvent.press(getByTestId('list-item'));
+      expect(onPress).not.toHaveBeenCalled();
+
+      // 矢印が表示されない
+      expect(queryByText('›')).toBeNull();
+
+      // 半透明になる
+      const style = StyleSheet.flatten(getByTestId('list-item').props.style);
+      expect(style.opacity).toBe(0.5);
+    });
+
+    it('testIDなしでもレンダリングできる', () => {
+      const { getByText } = render(
+        <ListItem title="タイトル" onPress={() => {}} />
+      );
+
+      expect(getByText('タイトル')).toBeTruthy();
+    });
+
+    it('カスタムaccessibilityLabelが適用される', () => {
+      const { getByTestId } = render(
+        <ListItem
+          title="タイトル"
+          onPress={() => {}}
+          accessibilityLabel="日記エントリーを開く"
+          testID="list-item"
+        />
+      );
+
+      const listItem = getByTestId('list-item');
+      expect(listItem.props.accessibilityLabel).toBe('日記エントリーを開く');
+    });
+
+    it('accessibilityLabel未指定時はtitleが使用される', () => {
+      const { getByTestId } = render(
+        <ListItem
+          title="日記タイトル"
+          onPress={() => {}}
+          testID="list-item"
+        />
+      );
+
+      const listItem = getByTestId('list-item');
+      expect(listItem.props.accessibilityLabel).toBe('日記タイトル');
+    });
+
+    it('onPressを複数回連続で呼んでも正常に動作する', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <ListItem title="タイトル" onPress={onPress} testID="list-item" />
+      );
+
+      const listItem = getByTestId('list-item');
+      fireEvent.press(listItem);
+      fireEvent.press(listItem);
+      fireEvent.press(listItem);
+
+      expect(onPress).toHaveBeenCalledTimes(3);
+    });
+
+    it('showArrowのデフォルト値はtrueである', () => {
+      const { getByText } = render(
+        <ListItem title="タイトル" onPress={() => {}} />
+      );
+
+      // showArrow未指定でも矢印が表示される
+      expect(getByText('›')).toBeTruthy();
+    });
+
+    it('subtitle と showArrow の組み合わせが正常に動作する', () => {
+      const { getByText } = render(
+        <ListItem
+          title="タイトル"
+          subtitle="サブタイトル"
+          onPress={() => {}}
+          showArrow={true}
+        />
+      );
+
+      expect(getByText('タイトル')).toBeTruthy();
+      expect(getByText('サブタイトル')).toBeTruthy();
+      expect(getByText('›')).toBeTruthy();
+    });
+
+    it('日本語の長いタイトルとsubtitleが正常に表示される', () => {
+      const { getByText } = render(
+        <ListItem
+          title="今日はとても良い天気でしたので、散歩に出かけました"
+          subtitle="2025年1月25日（土）晴れ"
+          onPress={() => {}}
+        />
+      );
+
+      expect(getByText('今日はとても良い天気でしたので、散歩に出かけました')).toBeTruthy();
+      expect(getByText('2025年1月25日（土）晴れ')).toBeTruthy();
+    });
+  });
 });

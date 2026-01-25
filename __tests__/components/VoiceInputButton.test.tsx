@@ -178,4 +178,113 @@ describe('VoiceInputButton', () => {
     button = getByTestId('voice-button');
     expect(button.props.accessibilityState?.busy).toBe(true);
   });
+
+  // エッジケース・異常系テスト
+  describe('エッジケース', () => {
+    it('recording=true かつ disabled=true の場合、disabledが優先される', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <VoiceInputButton
+          onPress={onPress}
+          recording={true}
+          disabled={true}
+          testID="voice-button"
+        />
+      );
+
+      fireEvent.press(getByTestId('voice-button'));
+
+      expect(onPress).not.toHaveBeenCalled();
+      expect(getByTestId('voice-button').props.accessibilityState?.disabled).toBe(true);
+    });
+
+    it('recording=true かつ disabled=true の場合、背景色は録音中（赤）だがopacityが0.5になる', () => {
+      const { getByTestId } = render(
+        <VoiceInputButton
+          onPress={() => {}}
+          recording={true}
+          disabled={true}
+          testID="voice-button"
+        />
+      );
+
+      const animatedView = getByTestId('voice-button-animated-view');
+      const style = StyleSheet.flatten(animatedView.props.style);
+
+      // 録音中の赤色
+      expect(style.backgroundColor).toBe('#FF3B30');
+      // disabledの半透明
+      expect(style.opacity).toBe(0.5);
+    });
+
+    it('testIDなしでもレンダリングできる', () => {
+      const { getByText } = render(
+        <VoiceInputButton onPress={() => {}} />
+      );
+
+      expect(getByText('🎤')).toBeTruthy();
+    });
+
+    it('カスタムaccessibilityLabelが適用される', () => {
+      const { getByTestId } = render(
+        <VoiceInputButton
+          onPress={() => {}}
+          accessibilityLabel="録音開始ボタン"
+          testID="voice-button"
+        />
+      );
+
+      const button = getByTestId('voice-button');
+      expect(button.props.accessibilityLabel).toBe('録音開始ボタン');
+    });
+
+    it('デフォルトのaccessibilityLabelは"音声入力"', () => {
+      const { getByTestId } = render(
+        <VoiceInputButton onPress={() => {}} testID="voice-button" />
+      );
+
+      const button = getByTestId('voice-button');
+      expect(button.props.accessibilityLabel).toBe('音声入力');
+    });
+
+    it('onPressを複数回連続で呼んでも正常に動作する', () => {
+      const onPress = jest.fn();
+      const { getByTestId } = render(
+        <VoiceInputButton onPress={onPress} testID="voice-button" />
+      );
+
+      const button = getByTestId('voice-button');
+      fireEvent.press(button);
+      fireEvent.press(button);
+      fireEvent.press(button);
+
+      expect(onPress).toHaveBeenCalledTimes(3);
+    });
+
+    it('recording状態の切り替えが正しく動作する', () => {
+      const { rerender, getByTestId } = render(
+        <VoiceInputButton onPress={() => {}} recording={false} testID="voice-button" />
+      );
+
+      let animatedView = getByTestId('voice-button-animated-view');
+      let style = StyleSheet.flatten(animatedView.props.style);
+      expect(style.backgroundColor).toBe('#007AFF'); // 通常状態
+
+      // 録音開始
+      rerender(
+        <VoiceInputButton onPress={() => {}} recording={true} testID="voice-button" />
+      );
+      animatedView = getByTestId('voice-button-animated-view');
+      style = StyleSheet.flatten(animatedView.props.style);
+      expect(style.backgroundColor).toBe('#FF3B30'); // 録音中
+
+      // 録音停止
+      rerender(
+        <VoiceInputButton onPress={() => {}} recording={false} testID="voice-button" />
+      );
+      animatedView = getByTestId('voice-button-animated-view');
+      style = StyleSheet.flatten(animatedView.props.style);
+      expect(style.backgroundColor).toBe('#007AFF'); // 通常状態に戻る
+    });
+  });
 });
