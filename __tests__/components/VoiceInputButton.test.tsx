@@ -2,17 +2,53 @@
  * VoiceInputButtonコンポーネントのテスト
  */
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { VoiceInputButton } from '../../src/components/VoiceInputButton';
 
 describe('VoiceInputButton', () => {
-  it('通常状態でマイクアイコンを表示する', () => {
+  it('マイクアイコン（🎤）を表示する', () => {
+    const { getByText } = render(
+      <VoiceInputButton onPress={() => {}} testID="voice-button" />
+    );
+
+    const icon = getByText('🎤');
+    expect(icon).toBeTruthy();
+  });
+
+  it('アイコンのフォントサイズは24である', () => {
+    const { getByText } = render(
+      <VoiceInputButton onPress={() => {}} />
+    );
+
+    const icon = getByText('🎤');
+    const style = StyleSheet.flatten(icon.props.style);
+
+    expect(style.fontSize).toBe(24);
+  });
+
+  it('ボタンのサイズは56×56である', () => {
     const { getByTestId } = render(
       <VoiceInputButton onPress={() => {}} testID="voice-button" />
     );
 
-    const button = getByTestId('voice-button');
-    expect(button).toBeTruthy();
+    const animatedView = getByTestId('voice-button-animated-view');
+    const style = StyleSheet.flatten(animatedView.props.style);
+
+    expect(style.width).toBe(56);
+    expect(style.height).toBe(56);
+    expect(style.borderRadius).toBe(28); // 円形 (56/2)
+  });
+
+  it('通常状態では背景色が#007AFFである', () => {
+    const { getByTestId } = render(
+      <VoiceInputButton onPress={() => {}} testID="voice-button" />
+    );
+
+    const animatedView = getByTestId('voice-button-animated-view');
+    const style = StyleSheet.flatten(animatedView.props.style);
+
+    expect(style.backgroundColor).toBe('#007AFF');
   });
 
   it('タップ時にonPressが呼ばれる', () => {
@@ -26,7 +62,7 @@ describe('VoiceInputButton', () => {
     expect(onPress).toHaveBeenCalledTimes(1);
   });
 
-  it('recording=true時に赤色で表示される', () => {
+  it('recording=true時に背景色が#FF3B30（赤）になる', () => {
     const { getByTestId } = render(
       <VoiceInputButton
         onPress={() => {}}
@@ -35,9 +71,13 @@ describe('VoiceInputButton', () => {
       />
     );
 
+    const animatedView = getByTestId('voice-button-animated-view');
+    const style = StyleSheet.flatten(animatedView.props.style);
+
+    expect(style.backgroundColor).toBe('#FF3B30');
+
+    // アクセシビリティでも録音中状態を確認
     const button = getByTestId('voice-button');
-    expect(button).toBeTruthy();
-    // recording時にbusyがtrueになることで録音中状態を確認
     expect(button.props.accessibilityState?.busy).toBe(true);
   });
 
@@ -70,7 +110,7 @@ describe('VoiceInputButton', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
-  it('disabled=true時に半透明で表示される', () => {
+  it('disabled=true時にopacity 0.5で半透明になる', () => {
     const { getByTestId } = render(
       <VoiceInputButton
         onPress={() => {}}
@@ -79,6 +119,12 @@ describe('VoiceInputButton', () => {
       />
     );
 
+    const animatedView = getByTestId('voice-button-animated-view');
+    const style = StyleSheet.flatten(animatedView.props.style);
+
+    expect(style.opacity).toBe(0.5);
+
+    // アクセシビリティでもdisabled状態を確認
     const button = getByTestId('voice-button');
     expect(button.props.accessibilityState?.disabled).toBe(true);
   });

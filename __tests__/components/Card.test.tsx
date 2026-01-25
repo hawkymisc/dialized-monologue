@@ -2,7 +2,7 @@
  * Cardコンポーネントのテスト
  */
 import React from 'react';
-import { Text } from 'react-native';
+import { Text, StyleSheet, Platform } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Card } from '../../src/components/Card';
 
@@ -17,7 +17,22 @@ describe('Card', () => {
     expect(getByText('テストコンテンツ')).toBeTruthy();
   });
 
-  it('variant="default"で枠線スタイルを適用する', () => {
+  it('基本スタイル（背景色、角丸、パディング）が適用される', () => {
+    const { getByTestId } = render(
+      <Card testID="card">
+        <Text>コンテンツ</Text>
+      </Card>
+    );
+
+    const card = getByTestId('card');
+    const style = StyleSheet.flatten(card.props.style);
+
+    expect(style.backgroundColor).toBe('#FFFFFF');
+    expect(style.borderRadius).toBe(8);
+    expect(style.padding).toBe(16);
+  });
+
+  it('variant="default"で枠線スタイル（太さ1、色#CCCCCC）が適用される', () => {
     const { getByTestId } = render(
       <Card variant="default" testID="card">
         <Text>コンテンツ</Text>
@@ -25,12 +40,15 @@ describe('Card', () => {
     );
 
     const card = getByTestId('card');
-    expect(card).toBeTruthy();
+    const style = StyleSheet.flatten(card.props.style);
+
+    expect(style.borderWidth).toBe(1);
+    expect(style.borderColor).toBe('#CCCCCC');
     // Viewとしてレンダリングされる（onPressなし）
     expect(card.type).toBe('View');
   });
 
-  it('variant="elevated"でelevationスタイルを適用する', () => {
+  it('variant="elevated"でelevationスタイルが適用される', () => {
     const { getByTestId } = render(
       <Card variant="elevated" testID="card">
         <Text>コンテンツ</Text>
@@ -38,7 +56,16 @@ describe('Card', () => {
     );
 
     const card = getByTestId('card');
-    expect(card).toBeTruthy();
+    const style = StyleSheet.flatten(card.props.style);
+
+    // プラットフォームに応じたスタイルを確認
+    if (Platform.OS === 'ios') {
+      expect(style.shadowColor).toBe('#000000');
+      expect(style.shadowOpacity).toBe(0.1);
+      expect(style.shadowRadius).toBe(4);
+    } else if (Platform.OS === 'android') {
+      expect(style.elevation).toBe(4);
+    }
   });
 
   it('onPress指定時にタップ可能', () => {

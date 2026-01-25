@@ -2,6 +2,7 @@
  * ListItemコンポーネントのテスト
  */
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ListItem } from '../../src/components/ListItem';
 
@@ -12,6 +13,19 @@ describe('ListItem', () => {
     );
 
     expect(getByText('日記タイトル')).toBeTruthy();
+  });
+
+  it('titleのスタイル（16px、太字、黒）が適用される', () => {
+    const { getByText } = render(
+      <ListItem title="日記タイトル" onPress={() => {}} />
+    );
+
+    const titleElement = getByText('日記タイトル');
+    const style = StyleSheet.flatten(titleElement.props.style);
+
+    expect(style.fontSize).toBe(16);
+    expect(style.fontWeight).toBe('600');
+    expect(style.color).toBe('#000000');
   });
 
   it('subtitleを表示する（指定時）', () => {
@@ -26,6 +40,38 @@ describe('ListItem', () => {
     expect(getByText('2025-01-25')).toBeTruthy();
   });
 
+  it('subtitleのスタイル（14px、グレー）が適用される', () => {
+    const { getByText } = render(
+      <ListItem
+        title="日記タイトル"
+        subtitle="2025-01-25"
+        onPress={() => {}}
+      />
+    );
+
+    const subtitleElement = getByText('2025-01-25');
+    const style = StyleSheet.flatten(subtitleElement.props.style);
+
+    expect(style.fontSize).toBe(14);
+    expect(style.color).toBe('#666666');
+  });
+
+  it('コンテナのスタイル（最小高さ56、パディング、背景色）が適用される', () => {
+    const { getByTestId } = render(
+      <ListItem title="日記タイトル" onPress={() => {}} testID="list-item" />
+    );
+
+    const container = getByTestId('list-item');
+    const style = StyleSheet.flatten(container.props.style);
+
+    expect(style.minHeight).toBe(56);
+    expect(style.paddingHorizontal).toBe(16);
+    expect(style.paddingVertical).toBe(12);
+    expect(style.backgroundColor).toBe('#FFFFFF');
+    expect(style.borderBottomWidth).toBe(1);
+    expect(style.borderBottomColor).toBe('#E0E0E0');
+  });
+
   it('右矢印を表示する（showArrow=true時）', () => {
     const { getByText } = render(
       <ListItem title="日記タイトル" onPress={() => {}} showArrow={true} />
@@ -33,6 +79,18 @@ describe('ListItem', () => {
 
     // 右矢印（›）が表示される
     expect(getByText('›')).toBeTruthy();
+  });
+
+  it('右矢印のスタイル（20px、グレー）が適用される', () => {
+    const { getByText } = render(
+      <ListItem title="日記タイトル" onPress={() => {}} showArrow={true} />
+    );
+
+    const arrowElement = getByText('›');
+    const style = StyleSheet.flatten(arrowElement.props.style);
+
+    expect(style.fontSize).toBe(20);
+    expect(style.color).toBe('#999999');
   });
 
   it('右矢印を非表示にする（showArrow=false時）', () => {
@@ -71,7 +129,7 @@ describe('ListItem', () => {
     expect(onPress).not.toHaveBeenCalled();
   });
 
-  it('disabled=true時に半透明で表示される', () => {
+  it('disabled=true時にopacity 0.5で半透明になる', () => {
     const { getByTestId } = render(
       <ListItem
         title="日記タイトル"
@@ -82,6 +140,9 @@ describe('ListItem', () => {
     );
 
     const listItem = getByTestId('list-item');
+    const style = StyleSheet.flatten(listItem.props.style);
+
+    expect(style.opacity).toBe(0.5);
     expect(listItem.props.accessibilityState?.disabled).toBe(true);
   });
 

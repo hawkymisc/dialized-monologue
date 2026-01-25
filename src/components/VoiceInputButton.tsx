@@ -85,7 +85,10 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       }}
       testID={testID}
     >
-      <Animated.View style={[buttonStyle, animatedStyle]}>
+      <Animated.View
+        style={[buttonStyle, animatedStyle]}
+        testID={testID ? `${testID}-animated-view` : undefined}
+      >
         <Text style={styles.icon}>🎤</Text>
       </Animated.View>
     </Pressable>
