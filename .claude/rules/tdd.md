@@ -1,5 +1,18 @@
 # TDD: Red → Green → Refactor → Feedback
 
+**重要**: 詳細なTDDガイドラインは `~/.claude/rules/tdd-comprehensive.md` を参照。
+このファイルはプロジェクト固有の補足を記載。
+
+## TDDの本質
+
+### 「仕様をテストコードとして記述する」
+
+テストは単なる動作確認ではなく：
+- ✅ 仕様書である（具体的な値を検証）
+- ✅ ドキュメントである（読めば仕様が分かる）
+- ✅ リグレッション防止である
+- ✅ 設計のフィードバックである
+
 ## サイクル図
 
 ```
@@ -47,3 +60,84 @@ Claudeは一発で動くコードを書きがちだが、TDDの本質的価値�
 
 テストが書きにくいと感じたら、それは設計に問題がある兆候。
 無理にテストを書くのではなく、設計を見直す。
+
+---
+
+## プロジェクト固有のテスト要件
+
+### React Nativeコンポーネント
+
+**仕様の詳細検証**（必須）:
+- [ ] サイズ: width, height, padding, margin, borderRadius
+- [ ] 色: backgroundColor, color, borderColor（具体的な値）
+- [ ] フォント: fontSize, fontWeight
+- [ ] レイアウト: minHeight, alignItems, justifyContent
+
+**エッジケース**（必須）:
+- [ ] 空文字列、undefined、null
+- [ ] 非常に長い文字列（1000文字）
+- [ ] 日本語の長い文字列
+- [ ] 矛盾する状態の組み合わせ
+- [ ] デフォルト値の確認
+- [ ] testIDなしでのレンダリング
+
+**アクセシビリティ**（必須）:
+- [ ] accessibilityRole
+- [ ] accessibilityLabel（カスタム/デフォルト）
+- [ ] accessibilityState（disabled、busyなど）
+- [ ] accessibilityHint
+
+### スタイル検証の書き方
+
+```typescript
+import { StyleSheet } from 'react-native';
+
+const { getByTestId } = render(<Component testID="test" />);
+const element = getByTestId('test');
+const style = StyleSheet.flatten(element.props.style);
+
+expect(style.width).toBe(48);
+expect(style.backgroundColor).toBe('#007AFF');
+```
+
+### テストファイル構造
+
+```typescript
+describe('ComponentName', () => {
+  // 正常系: 仕様の詳細検証
+  describe('仕様検証', () => {
+    it('サイズは48×48である', () => { /* ... */ });
+    it('背景色は#007AFFである', () => { /* ... */ });
+  });
+
+  // 振る舞い
+  describe('インタラクション', () => {
+    it('タップ時にonPressが呼ばれる', () => { /* ... */ });
+  });
+
+  // アクセシビリティ
+  describe('アクセシビリティ', () => {
+    it('accessibilityRole="button"が設定される', () => { /* ... */ });
+  });
+
+  // エッジケース・異常系
+  describe('エッジケース', () => {
+    it('空文字列でもレンダリングできる', () => { /* ... */ });
+    it('矛盾する状態が正しく処理される', () => { /* ... */ });
+  });
+});
+```
+
+### カバレッジ目標
+
+- **全体**: 80%以上
+- **新規コンポーネント**: 100%を目指す
+
+### 実装前チェックリスト
+
+コンポーネント実装を開始する前に：
+
+- [ ] 仕様の詳細（サイズ、色、フォント）を把握
+- [ ] エッジケース洗い出しチェックリスト（`~/.claude/rules/tdd-comprehensive.md`）を確認
+- [ ] 正常系・エッジケース・異常系のテストを計画
+- [ ] テストファイルの構造を決定
