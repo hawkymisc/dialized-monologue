@@ -200,48 +200,66 @@ interface Question {
 - TypeScript
 
 ### 主要ライブラリ
-| ライブラリ | バージョン | 用途 |
-|-----------|-----------|------|
-| expo | ~50.x | フレームワーク |
-| expo-notifications | ~0.27.x | 通知 |
-| @react-native-voice/voice | ^3.x | 音声認識 |
-| @react-native-async-storage/async-storage | ^1.x | ストレージ |
-| @react-navigation/native | ^6.x | ナビゲーション |
-| zustand | ^4.x | 状態管理 |
-| date-fns | ^3.x | 日付操作 |
+
+| ライブラリ | バージョン | 用途 | 実装状況 |
+|-----------|-----------|------|----------|
+| expo | ~54.0.31 | フレームワーク | ✅ |
+| expo-notifications | ~0.32.16 | 通知 | ✅ |
+| expo-file-system | ~19.0.21 | ファイルシステム | ✅ |
+| expo-sharing | ~14.0.8 | ファイル共有 | ✅ |
+| @react-native-async-storage/async-storage | 2.2.0 | ストレージ | ✅ |
+| @react-navigation/native | ^7.1.27 | ナビゲーション | ⏳ |
+| @react-navigation/native-stack | ^7.9.1 | スタックナビゲーション | ⏳ |
+| zustand | ^5.0.10 | 状態管理 | ✅ |
+| date-fns | ^4.1.0 | 日付操作 | ✅ |
+| react | 19.1.0 | UIライブラリ | ✅ |
+| react-native | 0.81.5 | モバイルフレームワーク | ✅ |
+
+**注意**: 音声認識は当初 `@react-native-voice/voice` を予定していましたが、実装では `expo-speech` の使用も検討中。
 
 ### ディレクトリ構造
+
 ```
 src/
 ├── components/       # 再利用可能なUIコンポーネント
-│   ├── Button.tsx
-│   ├── TextInput.tsx
-│   ├── VoiceInput.tsx
+│   ├── Button.tsx             ✅ 実装済み
+│   ├── TextInput.tsx          ✅ 実装済み
+│   ├── ListItem.tsx           ✅ 実装済み
+│   ├── VoiceInputButton.tsx   ✅ 実装済み
+│   ├── Card.tsx               ✅ 実装済み
 │   └── ...
 ├── screens/          # 画面コンポーネント
-│   ├── HomeScreen.tsx
-│   ├── DiaryInputScreen.tsx
-│   ├── DiaryDetailScreen.tsx
-│   └── SettingsScreen.tsx
+│   ├── HomeScreen.tsx         ⏳ 未実装
+│   ├── DiaryInputScreen.tsx   ⏳ 未実装
+│   ├── DiaryDetailScreen.tsx  ⏳ 未実装
+│   └── SettingsScreen.tsx     ⏳ 未実装
 ├── hooks/            # カスタムフック
-│   ├── useVoiceRecognition.ts
+│   ├── useVoiceRecognition.ts ⏳ 未実装
 │   └── ...
 ├── stores/           # Zustand ストア
-│   ├── diaryStore.ts
-│   ├── questionStore.ts
-│   └── settingsStore.ts
+│   ├── diaryStore.ts          ✅ 実装済み
+│   ├── questionStore.ts       ✅ 実装済み
+│   └── settingsStore.ts       ✅ 実装済み
 ├── services/         # 外部サービス連携
-│   ├── storage.ts
-│   ├── notification.ts
-│   ├── speech.ts
-│   └── export.ts
+│   ├── storage.ts             ✅ 実装済み
+│   ├── notification.ts        ✅ 実装済み
+│   ├── speech.ts              ✅ 実装済み
+│   └── export.ts              ✅ 実装済み
 ├── types/            # 型定義
-│   └── index.ts
+│   └── index.ts               ✅ 実装済み
 ├── utils/            # ユーティリティ
-│   └── date.ts
+│   └── date.ts                ✅ 実装済み
 └── constants/        # 定数
-    └── defaultQuestions.ts
+    └── defaultQuestions.ts    ✅ 実装済み
 ```
+
+**実装状況**:
+- ✅ 基盤層（型定義、ストレージ、サービス層、ストア）: 完了
+- ✅ UIコンポーネント: 完了（5コンポーネント）
+- ⏳ 画面コンポーネント: 未実装
+- ⏳ カスタムフック: 未実装
+
+詳細は [COMPONENTS.md](./COMPONENTS.md) を参照。
 
 ---
 
