@@ -43,7 +43,26 @@ npm run test:coverage # カバレッジ付きテスト
 ## テスト
 - `npm test` で実行
 - カバレッジ目標: 80%以上
+- 現在のカバレッジ: **93.98%** (217テスト、全パス)
 - テストファイルは `__tests__/` または `*.test.ts(x)` に配置
+
+## 実装状況（最終更新: 2026-01-26）
+
+### ✅ 完了
+- **基盤層**: 型定義、ストレージ、すべてのサービス（通知、音声認識、エクスポート）
+- **ストア**: diaryStore、questionStore、settingsStore
+- **ユーティリティ**: date.ts、defaultQuestions.ts
+- **UIコンポーネント** (5つ):
+  - Button
+  - TextInput
+  - ListItem
+  - VoiceInputButton
+  - Card
+
+### ⏳ 次のステップ
+- 画面コンポーネント（HomeScreen、DiaryInputScreen、DiaryDetailScreen、SettingsScreen）
+- カスタムフック（useVoiceRecognition等）
+- React Navigation統合
 
 ---
 
@@ -57,5 +76,7 @@ npm run test:coverage # カバレッジ付きテスト
 ---
 
 ## 参照ドキュメント
-- `PLAN.md` - 開発計画
+- `README.md` - プロジェクト概要とセットアップ
+- `PLAN.md` - 開発計画と実装状況
 - `SPEC.md` - 詳細仕様
+- `COMPONENTS.md` - UIコンポーネント一覧と使用方法
