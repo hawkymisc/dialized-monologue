@@ -128,6 +128,54 @@ describe('DiaryInputScreen', () => {
       const { getByTestId } = render(<DiaryInputScreen />);
       expect(getByTestId('answer-input')).toBeTruthy();
     });
+
+    it('未知の質問タイプの場合、テキスト入力として表示される（フォールバック）', () => {
+      const unknownQuestion: Question = {
+        id: 'q1',
+        text: '未知のタイプの質問',
+        type: 'unknown' as any,
+        order: 1,
+        isActive: true,
+      };
+
+      mockUseQuestionStore.mockReturnValue({
+        questions: [unknownQuestion],
+        isLoading: false,
+        error: null,
+        loadQuestions: mockLoadQuestions,
+        addQuestion: jest.fn(),
+        updateQuestion: jest.fn(),
+        deleteQuestion: jest.fn(),
+        reorderQuestions: jest.fn(),
+        resetToDefaults: jest.fn(),
+        getActiveQuestions: jest.fn(() => [unknownQuestion]),
+      });
+
+      const { getByTestId } = render(<DiaryInputScreen />);
+      // 未知の型はテキスト入力にフォールバック
+      expect(getByTestId('answer-input')).toBeTruthy();
+    });
+
+    it('質問が1つだけの場合、「次へ」ボタンは表示されず「保存」ボタンが表示される', () => {
+      mockUseQuestionStore.mockReturnValue({
+        questions: [mockQuestions[0]], // 1つだけ
+        isLoading: false,
+        error: null,
+        loadQuestions: mockLoadQuestions,
+        addQuestion: jest.fn(),
+        updateQuestion: jest.fn(),
+        deleteQuestion: jest.fn(),
+        reorderQuestions: jest.fn(),
+        resetToDefaults: jest.fn(),
+        getActiveQuestions: jest.fn(() => [mockQuestions[0]]),
+      });
+
+      const { getByText, queryByText } = render(<DiaryInputScreen />);
+      expect(getByText('1 / 1')).toBeTruthy();
+      expect(getByText('保存')).toBeTruthy();
+      expect(queryByText('次へ')).toBeNull();
+      expect(queryByText('戻る')).toBeNull();
+    });
   });
 
   describe('回答の入力', () => {
@@ -251,6 +299,44 @@ describe('DiaryInputScreen', () => {
         const entry = mockAddEntry.mock.calls[0][0];
         const today = new Date().toISOString().split('T')[0];
         expect(entry.date).toBe(today);
+      });
+    });
+
+    it('addEntryが失敗してもクラッシュしない', async () => {
+      mockAddEntry.mockRejectedValue(new Error('Save failed'));
+
+      const { getByText, getByTestId } = render(<DiaryInputScreen />);
+
+      fireEvent.press(getByText('5'));
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '良いこと');
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '学んだこと');
+
+      await expect(async () => {
+        fireEvent.press(getByText('保存'));
+        await waitFor(() => {
+          expect(mockAddEntry).toHaveBeenCalled();
+        });
+      }).rejects.not.toThrow();
+    });
+
+    it('保存ボタンを連続でタップしてもaddEntryは1回だけ呼ばれる', async () => {
+      const { getByText, getByTestId } = render(<DiaryInputScreen />);
+
+      fireEvent.press(getByText('5'));
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '良いこと');
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '学んだこと');
+
+      const saveButton = getByText('保存');
+      fireEvent.press(saveButton);
+      fireEvent.press(saveButton);
+      fireEvent.press(saveButton);
+
+      await waitFor(() => {
+        expect(mockAddEntry).toHaveBeenCalledTimes(1);
       });
     });
   });

@@ -58,6 +58,8 @@ export const DiaryDetailScreen: React.FC<DiaryDetailScreenProps> = ({ entryId })
   const [editedAnswers, setEditedAnswers] = useState<{
     [questionId: string]: string | number;
   }>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const entry = getEntryById(entryId);
 
@@ -89,24 +91,44 @@ export const DiaryDetailScreen: React.FC<DiaryDetailScreenProps> = ({ entryId })
 
   // 保存
   const handleSave = async () => {
-    const updatedAnswers: DiaryAnswer[] = entry.answers.map((answer) => ({
-      ...answer,
-      value: editedAnswers[answer.questionId] ?? answer.value,
-    }));
+    if (isSaving) return; // 連続タップ防止
 
-    const updatedEntry: DiaryEntry = {
-      ...entry,
-      answers: updatedAnswers,
-      updatedAt: new Date().toISOString(),
-    };
+    setIsSaving(true);
+    try {
+      const updatedAnswers: DiaryAnswer[] = entry.answers.map((answer) => ({
+        ...answer,
+        value: editedAnswers[answer.questionId] ?? answer.value,
+      }));
 
-    await updateEntry(updatedEntry);
-    setIsEditing(false);
+      const updatedEntry: DiaryEntry = {
+        ...entry,
+        answers: updatedAnswers,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await updateEntry(updatedEntry);
+      setIsEditing(false);
+    } catch (error) {
+      // エラーが発生してもクラッシュしない
+      console.error('Failed to update diary entry:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // 削除
   const handleDelete = async () => {
-    await deleteEntry(entry.id);
+    if (isDeleting) return; // 連続タップ防止
+
+    setIsDeleting(true);
+    try {
+      await deleteEntry(entry.id);
+    } catch (error) {
+      // エラーが発生してもクラッシュしない
+      console.error('Failed to delete diary entry:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // 回答の編集
@@ -156,13 +178,33 @@ export const DiaryDetailScreen: React.FC<DiaryDetailScreenProps> = ({ entryId })
       <View style={styles.buttonContainer}>
         {isEditing ? (
           <>
-            <Button title="保存" onPress={handleSave} variant="primary" />
-            <Button title="キャンセル" onPress={handleCancel} variant="outline" />
+            <Button
+              title="保存"
+              onPress={handleSave}
+              variant="primary"
+              disabled={isSaving}
+            />
+            <Button
+              title="キャンセル"
+              onPress={handleCancel}
+              variant="outline"
+              disabled={isSaving}
+            />
           </>
         ) : (
           <>
-            <Button title="編集" onPress={handleEdit} variant="primary" />
-            <Button title="削除" onPress={handleDelete} variant="outline" />
+            <Button
+              title="編集"
+              onPress={handleEdit}
+              variant="primary"
+              disabled={isDeleting}
+            />
+            <Button
+              title="削除"
+              onPress={handleDelete}
+              variant="outline"
+              disabled={isDeleting}
+            />
           </>
         )}
       </View>

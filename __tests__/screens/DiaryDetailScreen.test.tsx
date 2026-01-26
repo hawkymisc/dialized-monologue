@@ -141,6 +141,39 @@ describe('DiaryDetailScreen', () => {
       expect(getByText('編集')).toBeTruthy();
       expect(queryByText('保存')).toBeNull();
     });
+
+    it('updateEntryが失敗してもクラッシュしない', async () => {
+      mockUpdateEntry.mockRejectedValue(new Error('Update failed'));
+
+      const { getByText, getByDisplayValue } = render(
+        <DiaryDetailScreen entryId="entry-1" />
+      );
+
+      fireEvent.press(getByText('編集'));
+      const input = getByDisplayValue('素晴らしい一日でした');
+      fireEvent.changeText(input, '更新された回答');
+
+      await expect(async () => {
+        fireEvent.press(getByText('保存'));
+        await waitFor(() => {
+          expect(mockUpdateEntry).toHaveBeenCalled();
+        });
+      }).rejects.not.toThrow();
+    });
+
+    it('保存ボタンを連続でタップしてもupdateEntryは1回だけ呼ばれる', async () => {
+      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+
+      fireEvent.press(getByText('編集'));
+      const saveButton = getByText('保存');
+      fireEvent.press(saveButton);
+      fireEvent.press(saveButton);
+      fireEvent.press(saveButton);
+
+      await waitFor(() => {
+        expect(mockUpdateEntry).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   describe('削除機能', () => {
@@ -152,6 +185,32 @@ describe('DiaryDetailScreen', () => {
 
       await waitFor(() => {
         expect(mockDeleteEntry).toHaveBeenCalledWith('entry-1');
+      });
+    });
+
+    it('deleteEntryが失敗してもクラッシュしない', async () => {
+      mockDeleteEntry.mockRejectedValue(new Error('Delete failed'));
+
+      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+
+      await expect(async () => {
+        fireEvent.press(getByText('削除'));
+        await waitFor(() => {
+          expect(mockDeleteEntry).toHaveBeenCalled();
+        });
+      }).rejects.not.toThrow();
+    });
+
+    it('削除ボタンを連続でタップしてもdeleteEntryは1回だけ呼ばれる', async () => {
+      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+
+      const deleteButton = getByText('削除');
+      fireEvent.press(deleteButton);
+      fireEvent.press(deleteButton);
+      fireEvent.press(deleteButton);
+
+      await waitFor(() => {
+        expect(mockDeleteEntry).toHaveBeenCalledTimes(1);
       });
     });
   });
@@ -232,6 +291,47 @@ describe('DiaryDetailScreen', () => {
 
       // 編集モード終了後、元の値が表示される
       expect(getByText('素晴らしい一日でした')).toBeTruthy();
+    });
+
+    it('未知のanswer.typeの回答でも正常に表示できる', () => {
+      const unknownTypeEntry: DiaryEntry = {
+        ...mockEntry,
+        answers: [
+          {
+            questionId: 'q1',
+            questionText: '質問',
+            value: 'テスト回答',
+            type: 'unknown' as any,
+          },
+        ],
+      };
+      mockGetEntryById.mockReturnValue(unknownTypeEntry);
+
+      expect(() => {
+        render(<DiaryDetailScreen entryId="entry-1" />);
+      }).not.toThrow();
+
+      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      expect(getByText('テスト回答')).toBeTruthy();
+    });
+
+    it('answer.valueがundefinedの場合でもクラッシュしない', () => {
+      const undefinedValueEntry: DiaryEntry = {
+        ...mockEntry,
+        answers: [
+          {
+            questionId: 'q1',
+            questionText: '質問',
+            value: undefined as any,
+            type: 'text',
+          },
+        ],
+      };
+      mockGetEntryById.mockReturnValue(undefinedValueEntry);
+
+      expect(() => {
+        render(<DiaryDetailScreen entryId="entry-1" />);
+      }).not.toThrow();
     });
   });
 });

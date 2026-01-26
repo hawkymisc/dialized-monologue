@@ -138,5 +138,18 @@ describe('SettingsScreen', () => {
         fireEvent.press(getByText('リマインダー設定'));
       }).not.toThrow();
     });
+
+    it('設定項目を連続でタップしてもonNavigateが複数回呼ばれる', () => {
+      const { getByText } = render(<SettingsScreen onNavigate={mockOnNavigate} />);
+
+      const item = getByText('リマインダー設定');
+      fireEvent.press(item);
+      fireEvent.press(item);
+      fireEvent.press(item);
+
+      // 連続タップは防止しない（意図的な設計）
+      expect(mockOnNavigate).toHaveBeenCalledTimes(3);
+      expect(mockOnNavigate).toHaveBeenCalledWith('ReminderSettings');
+    });
   });
 });

@@ -58,6 +58,7 @@ export const DiaryInputScreen: React.FC = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<{ [questionId: string]: string | number }>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const activeQuestions = getActiveQuestions();
 
@@ -113,25 +114,35 @@ export const DiaryInputScreen: React.FC = () => {
 
   // 保存
   const handleSave = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    const now = new Date().toISOString();
+    if (isSaving) return; // 連続タップ防止
 
-    const diaryAnswers: DiaryAnswer[] = activeQuestions.map((q) => ({
-      questionId: q.id,
-      questionText: q.text,
-      value: answers[q.id] ?? '',
-      type: q.type === 'rating' ? 'rating' : 'text',
-    }));
+    setIsSaving(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const now = new Date().toISOString();
 
-    const entry: DiaryEntry = {
-      id: `entry-${Date.now()}`,
-      date: today,
-      createdAt: now,
-      updatedAt: now,
-      answers: diaryAnswers,
-    };
+      const diaryAnswers: DiaryAnswer[] = activeQuestions.map((q) => ({
+        questionId: q.id,
+        questionText: q.text,
+        value: answers[q.id] ?? '',
+        type: q.type === 'rating' ? 'rating' : 'text',
+      }));
 
-    await addEntry(entry);
+      const entry: DiaryEntry = {
+        id: `entry-${Date.now()}`,
+        date: today,
+        createdAt: now,
+        updatedAt: now,
+        answers: diaryAnswers,
+      };
+
+      await addEntry(entry);
+    } catch (error) {
+      // エラーが発生してもクラッシュしない
+      console.error('Failed to save diary entry:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // rating型の回答設定
@@ -183,6 +194,7 @@ export const DiaryInputScreen: React.FC = () => {
           ))}
         </View>
       ) : (
+        // multiline, text, または未知の型はすべてテキスト入力にフォールバック
         <TextInput
           value={String(currentAnswer ?? '')}
           onChangeText={handleTextChange}
@@ -206,6 +218,7 @@ export const DiaryInputScreen: React.FC = () => {
             title="保存"
             onPress={handleSave}
             variant="primary"
+            disabled={isSaving}
           />
         ) : (
           <Button

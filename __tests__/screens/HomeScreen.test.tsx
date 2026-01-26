@@ -216,6 +216,54 @@ describe('HomeScreen', () => {
       const { getByText } = render(<HomeScreen />);
       expect(getByText('エラー: データの読み込みに失敗しました')).toBeTruthy();
     });
+
+    it('loadEntriesが例外をスローした場合でもクラッシュしない', async () => {
+      mockLoadEntries.mockRejectedValue(new Error('Network error'));
+
+      expect(() => {
+        render(<HomeScreen />);
+      }).not.toThrow();
+    });
+
+    it('非常に長いエラーメッセージでも表示できる', () => {
+      const longError = 'A'.repeat(1000);
+      mockUseDiaryStore.mockReturnValue({
+        entries: [],
+        isLoading: false,
+        error: longError,
+        loadEntries: mockLoadEntries,
+        getEntryByDate: mockGetEntryByDate,
+        addEntry: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+        getEntryById: jest.fn(),
+        addAnswerToEntry: jest.fn(),
+        clearError: jest.fn(),
+      });
+
+      const { getByText } = render(<HomeScreen />);
+      expect(getByText(`エラー: ${longError}`)).toBeTruthy();
+    });
+
+    it('isLoading=trueかつerrorが設定されている場合、ローディングが優先される', () => {
+      mockUseDiaryStore.mockReturnValue({
+        entries: [],
+        isLoading: true,
+        error: 'エラーメッセージ',
+        loadEntries: mockLoadEntries,
+        getEntryByDate: mockGetEntryByDate,
+        addEntry: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+        getEntryById: jest.fn(),
+        addAnswerToEntry: jest.fn(),
+        clearError: jest.fn(),
+      });
+
+      const { getByText, queryByText } = render(<HomeScreen />);
+      expect(getByText('読み込み中...')).toBeTruthy();
+      expect(queryByText('エラー:')).toBeNull();
+    });
   });
 
   describe('アクセシビリティ', () => {
@@ -278,6 +326,71 @@ describe('HomeScreen', () => {
       expect(() => {
         render(<HomeScreen />);
       }).not.toThrow();
+    });
+
+    it('不正な日付形式のエントリーがあってもクラッシュしない', () => {
+      const invalidDateEntry: DiaryEntry = {
+        id: 'invalid',
+        date: 'invalid-date',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        answers: [],
+      };
+
+      mockUseDiaryStore.mockReturnValue({
+        entries: [invalidDateEntry],
+        isLoading: false,
+        error: null,
+        loadEntries: mockLoadEntries,
+        getEntryByDate: mockGetEntryByDate,
+        addEntry: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+        getEntryById: jest.fn(),
+        addAnswerToEntry: jest.fn(),
+        clearError: jest.fn(),
+      });
+
+      expect(() => {
+        render(<HomeScreen />);
+      }).not.toThrow();
+    });
+
+    it('同じ日付の重複エントリーがあっても正常に表示される', () => {
+      const duplicateEntries: DiaryEntry[] = [
+        {
+          id: '1',
+          date: '2026-01-25',
+          createdAt: '2026-01-25T10:00:00Z',
+          updatedAt: '2026-01-25T10:00:00Z',
+          answers: [],
+        },
+        {
+          id: '2',
+          date: '2026-01-25',
+          createdAt: '2026-01-25T11:00:00Z',
+          updatedAt: '2026-01-25T11:00:00Z',
+          answers: [],
+        },
+      ];
+
+      mockUseDiaryStore.mockReturnValue({
+        entries: duplicateEntries,
+        isLoading: false,
+        error: null,
+        loadEntries: mockLoadEntries,
+        getEntryByDate: mockGetEntryByDate,
+        addEntry: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+        getEntryById: jest.fn(),
+        addAnswerToEntry: jest.fn(),
+        clearError: jest.fn(),
+      });
+
+      const { getAllByText } = render(<HomeScreen />);
+      const dateElements = getAllByText('2026-01-25');
+      expect(dateElements).toHaveLength(2);
     });
   });
 });
