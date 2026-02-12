@@ -59,8 +59,6 @@ describe('DiaryInputScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGoBack.mockClear();
-    mockNavigate.mockClear();
     mockUseQuestionStore.mockReturnValue({
       questions: mockQuestions,
       isLoading: false,

@@ -17,8 +17,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import type { RouteProp } from '@react-navigation/native';
+import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../types/navigation';
 import { useDiaryStore } from '../stores/diaryStore';
 import { Button } from '../components/Button';

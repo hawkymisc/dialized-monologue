@@ -59,7 +59,6 @@ describe('HomeScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockNavigate.mockClear();
     mockUseDiaryStore.mockReturnValue({
       entries: [],
       isLoading: false,
