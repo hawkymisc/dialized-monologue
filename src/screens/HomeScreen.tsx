@@ -3,7 +3,6 @@
  * ホーム画面 - 今日の日記入力 / 過去の日記一覧
  *
  * TODO (将来の改善):
- * - ナビゲーション統合（React Navigation）
  * - 日付フォーマットの改善（例: "1月25日（土）"）
  * - エントリープレビューの表示（ListItemのsubtitle）
  * - 気分アイコンの表示（ratingに基づく絵文字）
@@ -17,10 +16,15 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useDiaryStore } from '../stores/diaryStore';
 import { Button } from '../components/Button';
 import { ListItem } from '../components/ListItem';
 import { DiaryEntry } from '../types';
+import type { RootStackParamList } from '../types/navigation';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 // カラー定数
 const COLORS = {
@@ -49,6 +53,7 @@ const SPACING = {
 };
 
 export const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const {
     entries,
     isLoading,
@@ -103,13 +108,13 @@ export const HomeScreen: React.FC = () => {
         {todayEntry ? (
           <Button
             title="今日の日記を見る"
-            onPress={() => {}}
+            onPress={() => navigation.navigate('DiaryDetail', { entryId: todayEntry.id })}
             variant="primary"
           />
         ) : (
           <Button
             title="日記を書く"
-            onPress={() => {}}
+            onPress={() => navigation.navigate('DiaryInput')}
             variant="primary"
           />
         )}
@@ -127,7 +132,7 @@ export const HomeScreen: React.FC = () => {
             renderItem={({ item }) => (
               <ListItem
                 title={item.date}
-                onPress={() => {}}
+                onPress={() => navigation.navigate('DiaryDetail', { entryId: item.id })}
                 testID={`diary-item-${item.id}`}
               />
             )}

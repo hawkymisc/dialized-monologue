@@ -2,13 +2,21 @@
  * HomeScreen テスト
  */
 import React from 'react';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, waitFor, fireEvent } from '@testing-library/react-native';
 import { HomeScreen } from '../../src/screens/HomeScreen';
 import { useDiaryStore } from '../../src/stores/diaryStore';
 import { DiaryEntry } from '../../src/types';
 
 // モック
 jest.mock('../../src/stores/diaryStore');
+
+const mockNavigate = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: () => ({
+    navigate: mockNavigate,
+  }),
+}));
 
 const mockUseDiaryStore = useDiaryStore as jest.MockedFunction<
   typeof useDiaryStore
@@ -51,6 +59,7 @@ describe('HomeScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockNavigate.mockClear();
     mockUseDiaryStore.mockReturnValue({
       entries: [],
       isLoading: false,
@@ -263,6 +272,58 @@ describe('HomeScreen', () => {
       const { getByText, queryByText } = render(<HomeScreen />);
       expect(getByText('読み込み中...')).toBeTruthy();
       expect(queryByText('エラー:')).toBeNull();
+    });
+  });
+
+  describe('ナビゲーション', () => {
+    it('「日記を書く」タップでDiaryInput画面に遷移する', () => {
+      mockGetEntryByDate.mockReturnValue(undefined);
+      const { getByText } = render(<HomeScreen />);
+
+      fireEvent.press(getByText('日記を書く'));
+      expect(mockNavigate).toHaveBeenCalledWith('DiaryInput');
+    });
+
+    it('「今日の日記を見る」タップでDiaryDetail画面に遷移する', () => {
+      const today = new Date().toISOString().split('T')[0];
+      const todayEntry: DiaryEntry = {
+        id: 'today-entry',
+        date: today,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        answers: [],
+      };
+      mockGetEntryByDate.mockReturnValue(todayEntry);
+
+      const { getByText } = render(<HomeScreen />);
+
+      fireEvent.press(getByText('今日の日記を見る'));
+      expect(mockNavigate).toHaveBeenCalledWith('DiaryDetail', {
+        entryId: 'today-entry',
+      });
+    });
+
+    it('ListItemタップでDiaryDetail画面に遷移する', () => {
+      mockUseDiaryStore.mockReturnValue({
+        entries: mockEntries,
+        isLoading: false,
+        error: null,
+        loadEntries: mockLoadEntries,
+        getEntryByDate: mockGetEntryByDate,
+        addEntry: jest.fn(),
+        updateEntry: jest.fn(),
+        deleteEntry: jest.fn(),
+        getEntryById: jest.fn(),
+        addAnswerToEntry: jest.fn(),
+        clearError: jest.fn(),
+      });
+
+      const { getByTestId } = render(<HomeScreen />);
+
+      fireEvent.press(getByTestId('diary-item-1'));
+      expect(mockNavigate).toHaveBeenCalledWith('DiaryDetail', {
+        entryId: '1',
+      });
     });
   });
 
