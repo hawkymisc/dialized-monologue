@@ -2,6 +2,15 @@
  * 型定義
  */
 
+// ナビゲーション型を再エクスポート
+export type {
+  RootStackParamList,
+  HomeScreenProps,
+  DiaryInputScreenProps,
+  DiaryDetailScreenProps,
+  SettingsScreenProps,
+} from './navigation';
+
 // 質問の回答タイプ
 export type QuestionType = 'text' | 'multiline' | 'rating' | 'choice';
 
