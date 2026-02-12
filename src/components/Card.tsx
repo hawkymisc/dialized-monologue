@@ -24,6 +24,7 @@ export interface CardProps {
   variant?: 'default' | 'elevated'; // デフォルト: 'default'
   onPress?: () => void;            // タップ可能にする場合のコールバック
   disabled?: boolean;              // タップ無効化（onPress指定時のみ有効）
+  style?: ViewStyle;               // 追加スタイル
   testID?: string;                 // テスト用ID
   accessibilityLabel?: string;     // アクセシビリティラベル
 }
@@ -33,6 +34,7 @@ export const Card: React.FC<CardProps> = ({
   variant = 'default',
   onPress,
   disabled = false,
+  style,
   testID,
   accessibilityLabel,
 }) => {
@@ -48,6 +50,7 @@ export const Card: React.FC<CardProps> = ({
     styles.card,
     variant === 'elevated' ? styles.card_elevated : styles.card_default,
     isDisabled && styles.card_disabled,
+    style,
   ].filter(Boolean) as ViewStyle[];
 
   // タップ可能な場合はPressableでラップ
