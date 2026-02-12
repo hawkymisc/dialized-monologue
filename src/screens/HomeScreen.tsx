@@ -58,7 +58,9 @@ export const HomeScreen: React.FC = () => {
   } = useDiaryStore();
 
   useEffect(() => {
-    loadEntries();
+    Promise.resolve(loadEntries()).catch(() => {
+      // エラーはストアのerror状態で管理される
+    });
   }, [loadEntries]);
 
   // 今日の日付を取得

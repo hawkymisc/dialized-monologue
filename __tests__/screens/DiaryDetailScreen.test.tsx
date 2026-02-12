@@ -153,12 +153,14 @@ describe('DiaryDetailScreen', () => {
       const input = getByDisplayValue('素晴らしい一日でした');
       fireEvent.changeText(input, '更新された回答');
 
-      await expect(async () => {
-        fireEvent.press(getByText('保存'));
-        await waitFor(() => {
-          expect(mockUpdateEntry).toHaveBeenCalled();
-        });
-      }).rejects.not.toThrow();
+      fireEvent.press(getByText('保存'));
+
+      await waitFor(() => {
+        expect(mockUpdateEntry).toHaveBeenCalled();
+      });
+
+      // エラーがキャッチされ、クラッシュせずに編集モードが維持される
+      expect(getByText('保存')).toBeTruthy();
     });
 
     it('保存ボタンを連続でタップしてもupdateEntryは1回だけ呼ばれる', async () => {
@@ -193,12 +195,14 @@ describe('DiaryDetailScreen', () => {
 
       const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
 
-      await expect(async () => {
-        fireEvent.press(getByText('削除'));
-        await waitFor(() => {
-          expect(mockDeleteEntry).toHaveBeenCalled();
-        });
-      }).rejects.not.toThrow();
+      fireEvent.press(getByText('削除'));
+
+      await waitFor(() => {
+        expect(mockDeleteEntry).toHaveBeenCalled();
+      });
+
+      // エラーがキャッチされ、クラッシュせずに画面が維持される
+      expect(getByText('削除')).toBeTruthy();
     });
 
     it('削除ボタンを連続でタップしてもdeleteEntryは1回だけ呼ばれる', async () => {

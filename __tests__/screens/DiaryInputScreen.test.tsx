@@ -313,12 +313,13 @@ describe('DiaryInputScreen', () => {
       fireEvent.press(getByText('次へ'));
       fireEvent.changeText(getByTestId('answer-input'), '学んだこと');
 
-      await expect(async () => {
-        fireEvent.press(getByText('保存'));
-        await waitFor(() => {
-          expect(mockAddEntry).toHaveBeenCalled();
-        });
-      }).rejects.not.toThrow();
+      fireEvent.press(getByText('保存'));
+
+      await waitFor(() => {
+        expect(mockAddEntry).toHaveBeenCalled();
+      });
+
+      // エラーが捕捉され、クラッシュせずにここに到達する
     });
 
     it('保存ボタンを連続でタップしてもaddEntryは1回だけ呼ばれる', async () => {
