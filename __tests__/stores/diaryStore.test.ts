@@ -241,4 +241,140 @@ describe('useDiaryStore', () => {
       expect(useDiaryStore.getState().error).toBeNull();
     });
   });
+
+  describe('エラーハンドリング', () => {
+    it('addEntryが失敗した場合、error状態が設定される', async () => {
+      mockStorageService.saveDiaryEntry.mockRejectedValue(new Error('Storage full'));
+      const entry = createDiaryEntry('2024-01-13');
+
+      await useDiaryStore.getState().addEntry(entry);
+
+      expect(useDiaryStore.getState().error).toBe('Storage full');
+    });
+
+    it('addEntryで非Errorオブジェクトがthrowされた場合、Unknown errorが設定される', async () => {
+      mockStorageService.saveDiaryEntry.mockRejectedValue('string error');
+      const entry = createDiaryEntry('2024-01-13');
+
+      await useDiaryStore.getState().addEntry(entry);
+
+      expect(useDiaryStore.getState().error).toBe('Unknown error');
+    });
+
+    it('updateEntryが失敗した場合、error状態が設定される', async () => {
+      const entry: DiaryEntry = {
+        id: '1',
+        date: '2024-01-13',
+        createdAt: '2024-01-13T21:00:00Z',
+        updatedAt: '2024-01-13T21:00:00Z',
+        answers: [],
+      };
+      useDiaryStore.setState({ entries: [entry] });
+      mockStorageService.saveDiaryEntry.mockRejectedValue(new Error('Write failed'));
+
+      await useDiaryStore.getState().updateEntry(entry);
+
+      expect(useDiaryStore.getState().error).toBe('Write failed');
+    });
+
+    it('updateEntryで非Errorオブジェクトがthrowされた場合、Unknown errorが設定される', async () => {
+      const entry: DiaryEntry = {
+        id: '1',
+        date: '2024-01-13',
+        createdAt: '2024-01-13T21:00:00Z',
+        updatedAt: '2024-01-13T21:00:00Z',
+        answers: [],
+      };
+      useDiaryStore.setState({ entries: [entry] });
+      mockStorageService.saveDiaryEntry.mockRejectedValue(42);
+
+      await useDiaryStore.getState().updateEntry(entry);
+
+      expect(useDiaryStore.getState().error).toBe('Unknown error');
+    });
+
+    it('deleteEntryが失敗した場合、error状態が設定される', async () => {
+      const entry: DiaryEntry = {
+        id: '1',
+        date: '2024-01-13',
+        createdAt: '2024-01-13T21:00:00Z',
+        updatedAt: '2024-01-13T21:00:00Z',
+        answers: [],
+      };
+      useDiaryStore.setState({ entries: [entry] });
+      mockStorageService.deleteDiaryEntry.mockRejectedValue(new Error('Delete failed'));
+
+      await useDiaryStore.getState().deleteEntry('1');
+
+      expect(useDiaryStore.getState().error).toBe('Delete failed');
+      expect(useDiaryStore.getState().entries).toHaveLength(1);
+    });
+
+    it('deleteEntryで非Errorオブジェクトがthrowされた場合、Unknown errorが設定される', async () => {
+      const entry: DiaryEntry = {
+        id: '1',
+        date: '2024-01-13',
+        createdAt: '2024-01-13T21:00:00Z',
+        updatedAt: '2024-01-13T21:00:00Z',
+        answers: [],
+      };
+      useDiaryStore.setState({ entries: [entry] });
+      mockStorageService.deleteDiaryEntry.mockRejectedValue({ code: 'EPERM' });
+
+      await useDiaryStore.getState().deleteEntry('1');
+
+      expect(useDiaryStore.getState().error).toBe('Unknown error');
+    });
+
+    it('loadEntriesで非Errorオブジェクトがthrowされた場合、Unknown errorが設定される', async () => {
+      mockStorageService.getDiaryEntries.mockRejectedValue('load failure');
+
+      await useDiaryStore.getState().loadEntries();
+
+      expect(useDiaryStore.getState().error).toBe('Unknown error');
+      expect(useDiaryStore.getState().isLoading).toBe(false);
+    });
+  });
+
+  describe('エッジケース', () => {
+    it('addAnswerToEntryで存在しないentryIdの場合、updateEntryが呼ばれない', async () => {
+      useDiaryStore.setState({ entries: [] });
+      mockStorageService.saveDiaryEntry.mockResolvedValue();
+
+      const answer: DiaryAnswer = {
+        questionId: 'q1',
+        questionText: '今日の気分は？',
+        value: '良い',
+        type: 'text',
+      };
+
+      await useDiaryStore.getState().addAnswerToEntry('nonexistent', answer);
+
+      expect(mockStorageService.saveDiaryEntry).not.toHaveBeenCalled();
+      expect(useDiaryStore.getState().entries).toHaveLength(0);
+    });
+
+    it('addAnswerToEntryでupdateEntryが内部失敗した場合、error状態が設定される', async () => {
+      const entry: DiaryEntry = {
+        id: '1',
+        date: '2024-01-13',
+        createdAt: '2024-01-13T21:00:00Z',
+        updatedAt: '2024-01-13T21:00:00Z',
+        answers: [],
+      };
+      useDiaryStore.setState({ entries: [entry] });
+      mockStorageService.saveDiaryEntry.mockRejectedValue(new Error('Save failed'));
+
+      const answer: DiaryAnswer = {
+        questionId: 'q1',
+        questionText: '今日の気分は？',
+        value: '良い',
+        type: 'text',
+      };
+
+      await useDiaryStore.getState().addAnswerToEntry('1', answer);
+
+      expect(useDiaryStore.getState().error).toBe('Save failed');
+    });
+  });
 });

@@ -153,4 +153,164 @@ describe('useQuestionStore', () => {
       expect(questions.length).toBeGreaterThan(0);
     });
   });
+
+  describe('エラーハンドリング', () => {
+    it('loadQuestionsが失敗した場合、error状態が設定される', async () => {
+      mockStorageService.getQuestions.mockRejectedValue(new Error('Storage error'));
+
+      await useQuestionStore.getState().loadQuestions();
+
+      expect(useQuestionStore.getState().error).toBe('Storage error');
+      expect(useQuestionStore.getState().isLoading).toBe(false);
+    });
+
+    it('loadQuestionsで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      mockStorageService.getQuestions.mockRejectedValue('string error');
+
+      await useQuestionStore.getState().loadQuestions();
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('addQuestionが失敗した場合、error状態が設定される', async () => {
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Save failed'));
+      const question = createQuestion('テスト質問', 'text', 1);
+
+      await useQuestionStore.getState().addQuestion(question);
+
+      expect(useQuestionStore.getState().error).toBe('Save failed');
+    });
+
+    it('addQuestionで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      mockStorageService.saveQuestions.mockRejectedValue(42);
+      const question = createQuestion('テスト質問', 'text', 1);
+
+      await useQuestionStore.getState().addQuestion(question);
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('updateQuestionが失敗した場合、error状態が設定される', async () => {
+      const existing: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [existing] });
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Update failed'));
+
+      await useQuestionStore.getState().updateQuestion({ ...existing, text: '更新' });
+
+      expect(useQuestionStore.getState().error).toBe('Update failed');
+    });
+
+    it('updateQuestionで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      const existing: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [existing] });
+      mockStorageService.saveQuestions.mockRejectedValue(null);
+
+      await useQuestionStore.getState().updateQuestion({ ...existing, text: '更新' });
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('deleteQuestionが失敗した場合、error状態が設定される', async () => {
+      const existing: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [existing] });
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Delete failed'));
+
+      await useQuestionStore.getState().deleteQuestion('1');
+
+      expect(useQuestionStore.getState().error).toBe('Delete failed');
+    });
+
+    it('deleteQuestionで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      const existing: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [existing] });
+      mockStorageService.saveQuestions.mockRejectedValue(undefined);
+
+      await useQuestionStore.getState().deleteQuestion('1');
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('reorderQuestionsが失敗した場合、error状態が設定される', async () => {
+      const questions: Question[] = [
+        { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true },
+        { id: '2', text: 'Q2', type: 'text', order: 2, isActive: true },
+      ];
+      useQuestionStore.setState({ questions });
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Reorder failed'));
+
+      await useQuestionStore.getState().reorderQuestions(['2', '1']);
+
+      expect(useQuestionStore.getState().error).toBe('Reorder failed');
+    });
+
+    it('reorderQuestionsで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      const questions: Question[] = [
+        { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true },
+        { id: '2', text: 'Q2', type: 'text', order: 2, isActive: true },
+      ];
+      useQuestionStore.setState({ questions });
+      mockStorageService.saveQuestions.mockRejectedValue({ custom: 'error' });
+
+      await useQuestionStore.getState().reorderQuestions(['2', '1']);
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('toggleQuestionActiveが失敗した場合、error状態が設定される', async () => {
+      const question: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [question] });
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Toggle failed'));
+
+      await useQuestionStore.getState().toggleQuestionActive('1');
+
+      expect(useQuestionStore.getState().error).toBe('Toggle failed');
+    });
+
+    it('toggleQuestionActiveで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      const question: Question = { id: '1', text: 'Q1', type: 'text', order: 1, isActive: true };
+      useQuestionStore.setState({ questions: [question] });
+      mockStorageService.saveQuestions.mockRejectedValue(false);
+
+      await useQuestionStore.getState().toggleQuestionActive('1');
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+
+    it('resetToDefaultsが失敗した場合、error状態が設定される', async () => {
+      mockStorageService.saveQuestions.mockRejectedValue(new Error('Reset failed'));
+
+      await useQuestionStore.getState().resetToDefaults();
+
+      expect(useQuestionStore.getState().error).toBe('Reset failed');
+    });
+
+    it('resetToDefaultsで非Errorがthrowされた場合、Unknown errorが設定される', async () => {
+      mockStorageService.saveQuestions.mockRejectedValue('reset error');
+
+      await useQuestionStore.getState().resetToDefaults();
+
+      expect(useQuestionStore.getState().error).toBe('Unknown error');
+    });
+  });
+
+  describe('clearError', () => {
+    it('clearErrorでerror状態がnullになる', () => {
+      useQuestionStore.setState({ error: 'Some error' });
+
+      useQuestionStore.getState().clearError();
+
+      expect(useQuestionStore.getState().error).toBeNull();
+    });
+  });
+
+  describe('loadQuestionsのデフォルト質問保存', () => {
+    it('ストレージが空の場合、StorageService.saveQuestionsが呼ばれる', async () => {
+      mockStorageService.getQuestions.mockResolvedValue([]);
+      mockStorageService.saveQuestions.mockResolvedValue();
+
+      await useQuestionStore.getState().loadQuestions();
+
+      expect(mockStorageService.saveQuestions).toHaveBeenCalled();
+    });
+  });
 });
