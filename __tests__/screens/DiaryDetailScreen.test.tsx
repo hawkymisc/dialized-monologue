@@ -10,6 +10,17 @@ import { DiaryEntry } from '../../src/types';
 // モック
 jest.mock('../../src/stores/diaryStore');
 
+const mockGoBack = jest.fn();
+const mockUseRoute = jest.fn();
+
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useRoute: () => mockUseRoute(),
+  useNavigation: () => ({
+    goBack: mockGoBack,
+  }),
+}));
+
 const mockUseDiaryStore = useDiaryStore as jest.MockedFunction<
   typeof useDiaryStore
 >;
@@ -48,6 +59,9 @@ describe('DiaryDetailScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockUseRoute.mockReturnValue({
+      params: { entryId: 'entry-1' },
+    });
     mockUseDiaryStore.mockReturnValue({
       entries: [mockEntry],
       isLoading: false,
@@ -66,12 +80,12 @@ describe('DiaryDetailScreen', () => {
 
   describe('仕様検証', () => {
     it('日付が表示される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('2026-01-25')).toBeTruthy();
     });
 
     it('全ての回答が表示される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('今日の気分は？')).toBeTruthy();
       expect(getByText('5')).toBeTruthy();
       expect(getByText('今日あった良いことは？')).toBeTruthy();
@@ -81,19 +95,19 @@ describe('DiaryDetailScreen', () => {
     });
 
     it('編集ボタンが表示される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('編集')).toBeTruthy();
     });
 
     it('削除ボタンが表示される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('削除')).toBeTruthy();
     });
   });
 
   describe('編集モード', () => {
     it('編集ボタンをタップすると編集モードに切り替わる', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       const editButton = getByText('編集');
       fireEvent.press(editButton);
@@ -105,7 +119,7 @@ describe('DiaryDetailScreen', () => {
 
     it('編集モードではテキスト回答を編集できる', () => {
       const { getByText, getByDisplayValue } = render(
-        <DiaryDetailScreen entryId="entry-1" />
+        <DiaryDetailScreen />
       );
 
       fireEvent.press(getByText('編集'));
@@ -117,7 +131,7 @@ describe('DiaryDetailScreen', () => {
     });
 
     it('保存ボタンをタップするとupdateEntryが呼ばれる', async () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       fireEvent.press(getByText('編集'));
       fireEvent.press(getByText('保存'));
@@ -129,7 +143,7 @@ describe('DiaryDetailScreen', () => {
 
     it('キャンセルボタンをタップすると編集がキャンセルされる', () => {
       const { getByText, queryByText } = render(
-        <DiaryDetailScreen entryId="entry-1" />
+        <DiaryDetailScreen />
       );
 
       fireEvent.press(getByText('編集'));
@@ -146,7 +160,7 @@ describe('DiaryDetailScreen', () => {
       mockUpdateEntry.mockRejectedValue(new Error('Update failed'));
 
       const { getByText, getByDisplayValue } = render(
-        <DiaryDetailScreen entryId="entry-1" />
+        <DiaryDetailScreen />
       );
 
       fireEvent.press(getByText('編集'));
@@ -164,7 +178,7 @@ describe('DiaryDetailScreen', () => {
     });
 
     it('保存ボタンを連続でタップしてもupdateEntryは1回だけ呼ばれる', async () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       fireEvent.press(getByText('編集'));
       const saveButton = getByText('保存');
@@ -180,7 +194,7 @@ describe('DiaryDetailScreen', () => {
 
   describe('削除機能', () => {
     it('削除ボタンをタップするとdeleteEntryが呼ばれる', async () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       const deleteButton = getByText('削除');
       fireEvent.press(deleteButton);
@@ -190,10 +204,22 @@ describe('DiaryDetailScreen', () => {
       });
     });
 
+    it('削除成功後にnavigation.goBack()が呼ばれる', async () => {
+      mockDeleteEntry.mockResolvedValue(undefined);
+
+      const { getByText } = render(<DiaryDetailScreen />);
+
+      fireEvent.press(getByText('削除'));
+
+      await waitFor(() => {
+        expect(mockGoBack).toHaveBeenCalledTimes(1);
+      });
+    });
+
     it('deleteEntryが失敗してもクラッシュしない', async () => {
       mockDeleteEntry.mockRejectedValue(new Error('Delete failed'));
 
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       fireEvent.press(getByText('削除'));
 
@@ -205,8 +231,22 @@ describe('DiaryDetailScreen', () => {
       expect(getByText('削除')).toBeTruthy();
     });
 
+    it('deleteEntryが失敗した場合goBackは呼ばれない', async () => {
+      mockDeleteEntry.mockRejectedValue(new Error('Delete failed'));
+
+      const { getByText } = render(<DiaryDetailScreen />);
+
+      fireEvent.press(getByText('削除'));
+
+      await waitFor(() => {
+        expect(mockDeleteEntry).toHaveBeenCalled();
+      });
+
+      expect(mockGoBack).not.toHaveBeenCalled();
+    });
+
     it('削除ボタンを連続でタップしてもdeleteEntryは1回だけ呼ばれる', async () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
 
       const deleteButton = getByText('削除');
       fireEvent.press(deleteButton);
@@ -223,19 +263,23 @@ describe('DiaryDetailScreen', () => {
     it('エントリーが見つからない場合、エラーメッセージが表示される', () => {
       mockGetEntryById.mockReturnValue(undefined);
 
-      const { getByText } = render(<DiaryDetailScreen entryId="invalid-id" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('日記が見つかりません')).toBeTruthy();
     });
 
     it('entryIdが未指定の場合、エラーメッセージが表示される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId={undefined as any} />);
+      mockUseRoute.mockReturnValue({
+        params: { entryId: undefined },
+      });
+
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('日記が見つかりません')).toBeTruthy();
     });
   });
 
   describe('アクセシビリティ', () => {
     it('画面全体にaccessibilityRole="none"が設定される', () => {
-      const { getByTestId } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByTestId } = render(<DiaryDetailScreen />);
       expect(getByTestId('diary-detail-screen')).toHaveProp(
         'accessibilityRole',
         'none'
@@ -243,7 +287,7 @@ describe('DiaryDetailScreen', () => {
     });
 
     it('日付にaccessibilityRole="header"が設定される', () => {
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       const date = getByText('2026-01-25');
       expect(date.props.accessibilityRole).toBe('header');
     });
@@ -258,7 +302,7 @@ describe('DiaryDetailScreen', () => {
       mockGetEntryById.mockReturnValue(emptyEntry);
 
       expect(() => {
-        render(<DiaryDetailScreen entryId="entry-1" />);
+        render(<DiaryDetailScreen />);
       }).not.toThrow();
     });
 
@@ -277,13 +321,13 @@ describe('DiaryDetailScreen', () => {
       mockGetEntryById.mockReturnValue(longEntry);
 
       expect(() => {
-        render(<DiaryDetailScreen entryId="entry-1" />);
+        render(<DiaryDetailScreen />);
       }).not.toThrow();
     });
 
     it('編集中にキャンセルすると変更が破棄される', () => {
       const { getByText, getByDisplayValue } = render(
-        <DiaryDetailScreen entryId="entry-1" />
+        <DiaryDetailScreen />
       );
 
       fireEvent.press(getByText('編集'));
@@ -312,10 +356,10 @@ describe('DiaryDetailScreen', () => {
       mockGetEntryById.mockReturnValue(unknownTypeEntry);
 
       expect(() => {
-        render(<DiaryDetailScreen entryId="entry-1" />);
+        render(<DiaryDetailScreen />);
       }).not.toThrow();
 
-      const { getByText } = render(<DiaryDetailScreen entryId="entry-1" />);
+      const { getByText } = render(<DiaryDetailScreen />);
       expect(getByText('テスト回答')).toBeTruthy();
     });
 
@@ -334,7 +378,7 @@ describe('DiaryDetailScreen', () => {
       mockGetEntryById.mockReturnValue(undefinedValueEntry);
 
       expect(() => {
-        render(<DiaryDetailScreen entryId="entry-1" />);
+        render(<DiaryDetailScreen />);
       }).not.toThrow();
     });
   });

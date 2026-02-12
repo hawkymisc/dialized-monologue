@@ -17,8 +17,11 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQuestionStore } from '../stores/questionStore';
 import { useDiaryStore } from '../stores/diaryStore';
+import type { RootStackParamList } from '../types/navigation';
 import { Button } from '../components/Button';
 import { TextInput } from '../components/TextInput';
 import { DiaryEntry, DiaryAnswer } from '../types';
@@ -51,7 +54,10 @@ const SPACING = {
   buttonSpacing: 12,
 };
 
+type DiaryInputNavigationProp = NativeStackNavigationProp<RootStackParamList, 'DiaryInput'>;
+
 export const DiaryInputScreen: React.FC = () => {
+  const navigation = useNavigation<DiaryInputNavigationProp>();
   const { questions, isLoading, error, loadQuestions, getActiveQuestions } =
     useQuestionStore();
   const { addEntry } = useDiaryStore();
@@ -137,6 +143,7 @@ export const DiaryInputScreen: React.FC = () => {
       };
 
       await addEntry(entry);
+      navigation.goBack();
     } catch (error) {
       // エラーが発生してもクラッシュしない
       console.error('Failed to save diary entry:', error);

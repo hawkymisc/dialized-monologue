@@ -17,6 +17,9 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import type { RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../types/navigation';
 import { useDiaryStore } from '../stores/diaryStore';
 import { Button } from '../components/Button';
 import { TextInput } from '../components/TextInput';
@@ -47,11 +50,10 @@ const SPACING = {
   buttonSpacing: 12,
 };
 
-interface DiaryDetailScreenProps {
-  entryId: string;
-}
-
-export const DiaryDetailScreen: React.FC<DiaryDetailScreenProps> = ({ entryId }) => {
+export const DiaryDetailScreen: React.FC = () => {
+  const route = useRoute<RouteProp<RootStackParamList, 'DiaryDetail'>>();
+  const navigation = useNavigation();
+  const { entryId } = route.params;
   const { getEntryById, updateEntry, deleteEntry } = useDiaryStore();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -123,6 +125,7 @@ export const DiaryDetailScreen: React.FC<DiaryDetailScreenProps> = ({ entryId })
     setIsDeleting(true);
     try {
       await deleteEntry(entry.id);
+      navigation.goBack();
     } catch (error) {
       // エラーが発生してもクラッシュしない
       console.error('Failed to delete diary entry:', error);

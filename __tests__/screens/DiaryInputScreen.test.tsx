@@ -9,6 +9,15 @@ import { useDiaryStore } from '../../src/stores/diaryStore';
 import { Question } from '../../src/types';
 
 // モック
+const mockGoBack = jest.fn();
+const mockNavigate = jest.fn();
+jest.mock('@react-navigation/native', () => ({
+  ...jest.requireActual('@react-navigation/native'),
+  useNavigation: () => ({
+    navigate: mockNavigate,
+    goBack: mockGoBack,
+  }),
+}));
 jest.mock('../../src/stores/questionStore');
 jest.mock('../../src/stores/diaryStore');
 
@@ -50,6 +59,8 @@ describe('DiaryInputScreen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGoBack.mockClear();
+    mockNavigate.mockClear();
     mockUseQuestionStore.mockReturnValue({
       questions: mockQuestions,
       isLoading: false,
@@ -320,6 +331,42 @@ describe('DiaryInputScreen', () => {
       });
 
       // エラーが捕捉され、クラッシュせずにここに到達する
+    });
+
+    it('保存成功後にnavigation.goBack()が呼ばれる', async () => {
+      mockAddEntry.mockResolvedValue(undefined);
+
+      const { getByText, getByTestId } = render(<DiaryInputScreen />);
+
+      fireEvent.press(getByText('5'));
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '良いこと');
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '学んだこと');
+      fireEvent.press(getByText('保存'));
+
+      await waitFor(() => {
+        expect(mockAddEntry).toHaveBeenCalledTimes(1);
+        expect(mockGoBack).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('保存失敗時にはnavigation.goBack()が呼ばれない', async () => {
+      mockAddEntry.mockRejectedValue(new Error('Save failed'));
+
+      const { getByText, getByTestId } = render(<DiaryInputScreen />);
+
+      fireEvent.press(getByText('5'));
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '良いこと');
+      fireEvent.press(getByText('次へ'));
+      fireEvent.changeText(getByTestId('answer-input'), '学んだこと');
+      fireEvent.press(getByText('保存'));
+
+      await waitFor(() => {
+        expect(mockAddEntry).toHaveBeenCalled();
+      });
+      expect(mockGoBack).not.toHaveBeenCalled();
     });
 
     it('保存ボタンを連続でタップしてもaddEntryは1回だけ呼ばれる', async () => {
