@@ -11,6 +11,7 @@ import {
   TextStyle,
   PressableProps,
 } from 'react-native';
+import { useThemeColors, ThemeColors } from '../theme';
 
 export interface ButtonProps {
   title: string;
@@ -29,6 +30,8 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   testID,
 }) => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const isDisabled = disabled || loading;
 
   const handlePress = () => {
@@ -49,6 +52,9 @@ export const Button: React.FC<ButtonProps> = ({
     isDisabled && styles.text_disabled,
   ].filter(Boolean) as TextStyle[];
 
+  // ActivityIndicatorの色: outline → primary, それ以外 → white
+  const indicatorColor = variant === 'outline' ? theme.primary : theme.white;
+
   return (
     <Pressable
       style={buttonStyle}
@@ -59,9 +65,7 @@ export const Button: React.FC<ButtonProps> = ({
       testID={testID}
     >
       {loading ? (
-        <ActivityIndicator
-          color={variant === 'outline' ? '#007AFF' : '#FFFFFF'}
-        />
+        <ActivityIndicator color={indicatorColor} />
       ) : (
         <Text style={textStyle}>{title}</Text>
       )}
@@ -69,7 +73,7 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   button: {
     paddingVertical: 12,
     paddingHorizontal: 24,
@@ -77,35 +81,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
-  },
+  } as ViewStyle,
   button_primary: {
-    backgroundColor: '#007AFF',
-  },
+    backgroundColor: theme.primary,
+  } as ViewStyle,
   button_secondary: {
-    backgroundColor: '#8E8E93',
-  },
+    backgroundColor: '#8E8E93', // gray - テーマに依存しない固定色
+  } as ViewStyle,
   button_outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#007AFF',
-  },
+    borderColor: theme.primary,
+  } as ViewStyle,
   button_disabled: {
     opacity: 0.5,
-  },
+  } as ViewStyle,
   text: {
     fontSize: 16,
     fontWeight: '600',
-  },
+  } as TextStyle,
   text_primary: {
-    color: '#FFFFFF',
-  },
+    color: theme.white,
+  } as TextStyle,
   text_secondary: {
-    color: '#FFFFFF',
-  },
+    color: theme.white,
+  } as TextStyle,
   text_outline: {
-    color: '#007AFF',
-  },
+    color: theme.primary,
+  } as TextStyle,
   text_disabled: {
     opacity: 1, // 親のopacityで制御されるため
-  },
+  } as TextStyle,
 });

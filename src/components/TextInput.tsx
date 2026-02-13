@@ -10,14 +10,7 @@ import {
   TextStyle,
   ViewStyle,
 } from 'react-native';
-
-// 定数
-const COLORS = {
-  text: '#000',
-  border: '#ccc',
-  error: '#FF3B30',
-  placeholder: '#999',
-} as const;
+import { useThemeColors, ThemeColors } from '../theme';
 
 const FONT_SIZES = {
   label: 14,
@@ -48,6 +41,9 @@ export const TextInput: React.FC<TextInputProps> = ({
   testID,
   accessibilityLabel,
 }) => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
+
   const inputStyle: TextStyle[] = [
     styles.input,
     error && styles.inputError,
@@ -68,7 +64,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         multiline={multiline}
         editable={editable}
         testID={testID || 'text-input'}
-        placeholderTextColor={COLORS.placeholder}
+        placeholderTextColor={theme.textSecondary}
         accessibilityLabel={accessibilityLabel || label}
         accessibilityState={{ disabled: !editable }}
         accessibilityHint={error}
@@ -86,7 +82,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     marginBottom: 16,
   } as ViewStyle,
@@ -94,24 +90,24 @@ const styles = StyleSheet.create({
     fontSize: FONT_SIZES.label,
     fontWeight: '600',
     marginBottom: 8,
-    color: COLORS.text,
+    color: theme.text,
   } as TextStyle,
   input: {
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: theme.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     fontSize: FONT_SIZES.input,
-    color: COLORS.text,
+    color: theme.text,
     minHeight: 44,
   } as TextStyle,
   inputError: {
-    borderColor: COLORS.error,
+    borderColor: theme.error,
   } as ViewStyle,
   error: {
     fontSize: FONT_SIZES.error,
-    color: COLORS.error,
+    color: theme.error,
     marginTop: 4,
   } as TextStyle,
 });

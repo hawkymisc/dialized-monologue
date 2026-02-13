@@ -9,13 +9,9 @@ import {
   StyleSheet,
   Animated,
   ViewStyle,
+  TextStyle,
 } from 'react-native';
-
-// カラー定数
-const COLORS = {
-  primary: '#007AFF',      // iOS Blue
-  recording: '#FF3B30',    // Red
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 export interface VoiceInputButtonProps {
   onPress: () => void;           // タップ時のコールバック
@@ -32,6 +28,8 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
   testID,
   accessibilityLabel = '音声入力',
 }) => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -109,22 +107,22 @@ const BUTTON_SIZE = 56;
 const ICON_SIZE = 24;
 const DISABLED_OPACITY = 0.5;
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   button: {
     width: BUTTON_SIZE,
     height: BUTTON_SIZE,
     borderRadius: BUTTON_SIZE / 2,
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
+  } as ViewStyle,
   button_recording: {
-    backgroundColor: COLORS.recording,
-  },
+    backgroundColor: theme.error,
+  } as ViewStyle,
   button_disabled: {
     opacity: DISABLED_OPACITY,
-  },
+  } as ViewStyle,
   icon: {
     fontSize: ICON_SIZE,
-  },
+  } as TextStyle,
 });
