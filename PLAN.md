@@ -139,11 +139,11 @@ TDDサイクル・チェックリストは `.claude/rules/tdd.md` を参照。
 
 #### Step 2: ドメインロジック ✅ 完了
 3. ✅ **日記ストア** (`stores/diaryStore.ts`) - CRUD操作
-   - テスト: 88.88%カバレッジ
+   - テスト: 91.66%ブランチカバレッジ
 4. ✅ **質問ストア** (`stores/questionStore.ts`) - 質問管理
-   - テスト: 84.31%カバレッジ
+   - テスト: 90%ブランチカバレッジ
 5. ✅ **設定ストア** (`stores/settingsStore.ts`) - リマインダー時間等
-   - テスト: 83.67%カバレッジ
+   - テスト: 100%ブランチカバレッジ
    - Refactor完了: ストア構造の統一
 
 #### Step 3: サービス層 ✅ 完了
@@ -159,19 +159,22 @@ TDDサイクル・チェックリストは `.claude/rules/tdd.md` を参照。
    - テスト: 96.87%カバレッジ
    - date-fnsライブラリ活用
 
-#### Step 4: UI層 🔄 着手中
+#### Step 4: UI層 ✅ 完了
 10. ✅ **基本UIコンポーネント** (`components/Button.tsx`)
     - variant対応（primary/secondary/outline）
     - アクセシビリティ対応
-    - 注: React Nativeテスト環境の課題により、テスト実行は保留
-11. ⏳ **TextInputコンポーネント** - テキスト入力
-12. ⏳ **入力コンポーネント** - テキスト/音声切替
-13. ⏳ **日記一覧画面** - 過去の日記表示
-14. ⏳ **日記入力画面** - 質問に回答
-15. ⏳ **設定画面** - リマインダー時間設定
-    - → Refactor後: 共通UIパターンのコンポーネント化
+11. ✅ **TextInputコンポーネント** (`components/TextInput.tsx`)
+12. ✅ **Card/ListItem/VoiceInputButton** (`components/`)
+13. ✅ **HomeScreen** (`screens/HomeScreen.tsx`) - 日記一覧・今日の日記
+14. ✅ **DiaryInputScreen** (`screens/DiaryInputScreen.tsx`) - 質問回答
+15. ✅ **DiaryDetailScreen** (`screens/DiaryDetailScreen.tsx`) - 日記閲覧/編集/削除
+16. ✅ **SettingsScreen** (`screens/SettingsScreen.tsx`) - リマインダー・ダークモード
+17. ✅ **AppNavigator** (`navigation/AppNavigator.tsx`) - Stack Navigation
+18. ✅ **App.tsx** - AppNavigator統合
 
-**次のステップ**: 詳細は `NEXT_STEPS.md` を参照
+**テストカバレッジ**: 377テスト全パス、ブランチ90.65%
+
+**次のステップ**: Phase 5 受け入れテスト
 
 ---
 

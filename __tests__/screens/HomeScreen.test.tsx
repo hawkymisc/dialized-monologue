@@ -302,6 +302,13 @@ describe('HomeScreen', () => {
       });
     });
 
+    it('設定ボタンタップでSettings画面に遷移する', () => {
+      const { getByTestId } = render(<HomeScreen />);
+
+      fireEvent.press(getByTestId('settings-button'));
+      expect(mockNavigate).toHaveBeenCalledWith('Settings');
+    });
+
     it('ListItemタップでDiaryDetail画面に遷移する', () => {
       mockUseDiaryStore.mockReturnValue({
         entries: mockEntries,

@@ -97,10 +97,18 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container} testID="home-screen" accessibilityRole="none">
-      {/* タイトル */}
-      <Text style={styles.title} accessibilityRole="header">
-        日記
-      </Text>
+      {/* ヘッダー */}
+      <View style={styles.header}>
+        <Text style={styles.title} accessibilityRole="header">
+          日記
+        </Text>
+        <Button
+          title="設定"
+          onPress={() => navigation.navigate('Settings')}
+          variant="outline"
+          testID="settings-button"
+        />
+      </View>
 
       {/* 今日の日記セクション */}
       <View style={styles.section}>
@@ -149,11 +157,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
     padding: SPACING.container,
   } as ViewStyle,
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.titleBottom,
+  } as ViewStyle,
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
     color: COLORS.text,
-    marginBottom: SPACING.titleBottom,
   } as TextStyle,
   section: {
     marginBottom: SPACING.sectionBottom,
