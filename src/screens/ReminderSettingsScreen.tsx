@@ -15,15 +15,7 @@ import {
 } from 'react-native';
 import { useSettingsStore } from '../stores/settingsStore';
 import { ReminderTime } from '../types';
-
-const COLORS = {
-  background: '#F5F5F5',
-  white: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-  primary: '#007AFF',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 const FONT_SIZES = { title: 24, body: 16, caption: 14 };
 const SPACING = { container: 16, titleBottom: 24, itemGap: 12 };
@@ -39,6 +31,8 @@ const formatTime = (hour: number, minute: number): string => {
 };
 
 export const ReminderSettingsScreen: React.FC = () => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const {
     settings,
     loadSettings,
@@ -111,21 +105,21 @@ export const ReminderSettingsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     padding: SPACING.container,
   } as ViewStyle,
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.titleBottom,
   } as TextStyle,
   emptyText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: 20,
   } as TextStyle,
@@ -133,7 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.cardBackground,
     padding: SPACING.container,
     borderRadius: 8,
     marginBottom: SPACING.itemGap,
@@ -141,7 +135,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: FONT_SIZES.body,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
   } as TextStyle,
   itemActions: {
     flexDirection: 'row',
@@ -154,10 +148,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   deleteText: {
     fontSize: FONT_SIZES.caption,
-    color: COLORS.error,
+    color: theme.error,
   } as TextStyle,
   addButton: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: theme.primary,
     padding: SPACING.container,
     borderRadius: 8,
     alignItems: 'center',
@@ -166,6 +160,6 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: FONT_SIZES.body,
     fontWeight: '600',
-    color: COLORS.white,
+    color: theme.cardBackground,
   } as TextStyle,
 });

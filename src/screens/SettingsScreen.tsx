@@ -21,7 +21,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ListItem } from '../components/ListItem';
 import type { RootStackParamList } from '../types/navigation';
-import { useTheme } from '../utils/theme';
+import { useThemeColors, ThemeColors } from '../theme';
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -45,7 +45,7 @@ type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Set
 
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<SettingsNavigationProp>();
-  const theme = useTheme();
+  const theme = useThemeColors();
   const styles = createStyles(theme);
 
   const handleNavigate = (screen: SettingScreen) => {
@@ -100,7 +100,7 @@ export const SettingsScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: ReturnType<typeof useTheme>) => StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,

@@ -24,14 +24,7 @@ import { Button } from '../components/Button';
 import { TextInput } from '../components/TextInput';
 import { Card } from '../components/Card';
 import { DiaryAnswer, DiaryEntry } from '../types';
-
-// カラー定数
-const COLORS = {
-  background: '#F5F5F5',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -54,6 +47,8 @@ export const DiaryDetailScreen: React.FC = () => {
   const navigation = useNavigation();
   const { entryId } = route.params;
   const { getEntryById, updateEntry, deleteEntry } = useDiaryStore();
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedAnswers, setEditedAnswers] = useState<{
@@ -214,10 +209,10 @@ export const DiaryDetailScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   } as ViewStyle,
   contentContainer: {
     padding: SPACING.container,
@@ -225,7 +220,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: FONT_SIZES.date,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.dateBottom,
   } as TextStyle,
   answerCard: {
@@ -234,12 +229,12 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: FONT_SIZES.question,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: 8,
   } as TextStyle,
   answerText: {
     fontSize: FONT_SIZES.answer,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
   } as TextStyle,
   buttonContainer: {
     flexDirection: 'row',
@@ -249,7 +244,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   errorText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.error,
+    color: theme.error,
     textAlign: 'center',
     marginTop: 20,
   } as TextStyle,

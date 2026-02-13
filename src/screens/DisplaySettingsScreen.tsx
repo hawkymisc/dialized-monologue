@@ -5,7 +5,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useSettingsStore } from '../stores/settingsStore';
-import { useTheme } from '../utils/theme';
+import { useThemeColors, ThemeColors } from '../theme';
 
 const FONT_SIZES = {
   title: 24,
@@ -21,7 +21,7 @@ const SPACING = {
 
 export const DisplaySettingsScreen: React.FC = () => {
   const { settings, loadSettings, setDarkMode } = useSettingsStore();
-  const theme = useTheme();
+  const theme = useThemeColors();
 
   useEffect(() => {
     loadSettings();
@@ -48,7 +48,7 @@ export const DisplaySettingsScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: ReturnType<typeof useTheme>) => {
+const createStyles = (theme: ThemeColors) => {
   return StyleSheet.create({
     container: {
       flex: 1,

@@ -16,15 +16,7 @@ import {
 } from 'react-native';
 import { useQuestionStore } from '../stores/questionStore';
 import { QuestionType } from '../types';
-
-const COLORS = {
-  background: '#F5F5F5',
-  white: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-  primary: '#007AFF',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 const FONT_SIZES = {
   title: 24,
@@ -46,6 +38,8 @@ const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
 };
 
 export const QuestionSettingsScreen: React.FC = () => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const {
     questions,
     loadQuestions,
@@ -90,7 +84,7 @@ export const QuestionSettingsScreen: React.FC = () => {
                 testID={`question-switch-${question.id}`}
                 value={question.isActive}
                 onValueChange={() => toggleQuestionActive(question.id)}
-                trackColor={{ false: '#ccc', true: COLORS.primary }}
+                trackColor={{ false: '#ccc', true: theme.primary }}
               />
               <TouchableOpacity
                 testID={`question-delete-${question.id}`}
@@ -117,26 +111,26 @@ export const QuestionSettingsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     padding: SPACING.container,
   } as ViewStyle,
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.titleBottom,
   } as TextStyle,
   emptyText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: 20,
   } as TextStyle,
   questionItem: {
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.cardBackground,
     borderRadius: 8,
     padding: SPACING.container,
     marginBottom: SPACING.itemGap,
@@ -150,12 +144,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   questionText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: 4,
   } as TextStyle,
   questionType: {
     fontSize: FONT_SIZES.caption,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
   } as TextStyle,
   questionActions: {
     flexDirection: 'row',
@@ -166,23 +160,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 4,
-    backgroundColor: COLORS.error,
+    backgroundColor: theme.error,
   } as ViewStyle,
   deleteButtonText: {
     fontSize: FONT_SIZES.caption,
-    color: COLORS.white,
+    color: theme.cardBackground,
     fontWeight: '600',
   } as TextStyle,
   resetButton: {
     marginTop: SPACING.container,
     padding: SPACING.container,
     borderRadius: 8,
-    backgroundColor: COLORS.white,
+    backgroundColor: theme.cardBackground,
     alignItems: 'center',
   } as ViewStyle,
   resetButtonText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.primary,
+    color: theme.primary,
     fontWeight: '600',
   } as TextStyle,
 });

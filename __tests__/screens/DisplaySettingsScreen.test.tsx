@@ -5,7 +5,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
 import { DisplaySettingsScreen } from '../../src/screens/DisplaySettingsScreen';
-import { LIGHT_THEME, DARK_THEME } from '../../src/utils/theme';
+import { LIGHT_THEME, DARK_THEME } from '../../src/theme';
 
 const mockSetDarkMode = jest.fn().mockResolvedValue(undefined);
 const mockLoadSettings = jest.fn().mockResolvedValue(undefined);
@@ -14,7 +14,7 @@ jest.mock('../../src/stores/settingsStore', () => ({
   useSettingsStore: jest.fn(),
 }));
 
-jest.mock('../../src/utils/theme', () => ({
+jest.mock('../../src/theme', () => ({
   LIGHT_THEME: {
     background: '#F5F5F5',
     cardBackground: '#FFFFFF',
@@ -23,6 +23,8 @@ jest.mock('../../src/utils/theme', () => ({
     border: '#E0E0E0',
     primary: '#007AFF',
     error: '#FF3B30',
+    white: '#FFFFFF',
+    selected: '#E3F2FD',
   },
   DARK_THEME: {
     background: '#1A1A1A',
@@ -32,17 +34,21 @@ jest.mock('../../src/utils/theme', () => ({
     border: '#3A3A3A',
     primary: '#0A84FF',
     error: '#FF453A',
+    white: '#1A1A1A',
+    selected: '#1E3A5F',
   },
+  useThemeColors: jest.fn(),
   useTheme: jest.fn(),
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 import { useSettingsStore } from '../../src/stores/settingsStore';
-import { useTheme } from '../../src/utils/theme';
+import { useThemeColors } from '../../src/theme';
 
 const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<
   typeof useSettingsStore
 >;
-const mockUseTheme = useTheme as jest.MockedFunction<typeof useTheme>;
+const mockUseThemeColors = useThemeColors as jest.MockedFunction<typeof useThemeColors>;
 
 const createMockStore = (overrides: Partial<{
   settings: { isDarkMode: boolean };
@@ -59,7 +65,7 @@ describe('DisplaySettingsScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseSettingsStore.mockReturnValue(createMockStore() as any);
-    mockUseTheme.mockReturnValue(LIGHT_THEME);
+    mockUseThemeColors.mockReturnValue(LIGHT_THEME);
   });
 
   describe('仕様検証', () => {
@@ -181,7 +187,7 @@ describe('DisplaySettingsScreen', () => {
       mockUseSettingsStore.mockReturnValue(
         createMockStore({ settings: { isDarkMode: true } }) as any
       );
-      mockUseTheme.mockReturnValue(DARK_THEME);
+      mockUseThemeColors.mockReturnValue(DARK_THEME);
       const { getByText } = render(<DisplaySettingsScreen />);
       const style = StyleSheet.flatten(getByText('表示設定').props.style);
       expect(style.color).toBe(DARK_THEME.text);
@@ -191,7 +197,7 @@ describe('DisplaySettingsScreen', () => {
       mockUseSettingsStore.mockReturnValue(
         createMockStore({ settings: { isDarkMode: true } }) as any
       );
-      mockUseTheme.mockReturnValue(DARK_THEME);
+      mockUseThemeColors.mockReturnValue(DARK_THEME);
       const { getByTestId } = render(<DisplaySettingsScreen />);
       const style = StyleSheet.flatten(
         getByTestId('display-settings-screen').props.style

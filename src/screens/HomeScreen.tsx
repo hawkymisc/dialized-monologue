@@ -23,7 +23,7 @@ import { Button } from '../components/Button';
 import { ListItem } from '../components/ListItem';
 import { DiaryEntry } from '../types';
 import type { RootStackParamList } from '../types/navigation';
-import { useTheme } from '../utils/theme';
+import { useThemeColors, ThemeColors } from '../theme';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -53,7 +53,7 @@ export const HomeScreen: React.FC = () => {
     loadEntries,
     getEntryByDate,
   } = useDiaryStore();
-  const theme = useTheme();
+  const theme = useThemeColors();
   const styles = createStyles(theme);
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export const HomeScreen: React.FC = () => {
   );
 };
 
-const createStyles = (theme: ReturnType<typeof useTheme>) => StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
