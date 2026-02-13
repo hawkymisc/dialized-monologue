@@ -1,266 +1,115 @@
 # 次のステップ: dialized-monologue
 
-最終更新: 2026-01-21
+最終更新: 2026-02-13
 
-## 📊 現在の状態
+## 現在の状態
 
-### ✅ 完了済み
+### 完了済み
 - **Phase 1-3**: 要件定義、プロジェクトセットアップ完了
-- **Phase 4 Step 1-3**: 基盤層、ドメインロジック、サービス層完了
-- **React Nativeテスト環境**: ✅ 修正完了（詳細は下記）
-- **テスト**: 143テストケース全てパス、カバレッジ向上
-- **PR #7**: エクスポートサービス・日付ユーティリティ・Buttonコンポーネント実装
-  - CodeRabbitレビュー対応済み
-  - React Nativeテスト環境問題も解決済み
-  - マージ待ち
+- **Phase 4**: TDD実装 全完了
+  - Step 1: 基盤層（型定義、ストレージ）
+  - Step 2: ドメインロジック（diary/question/settingsストア）
+  - Step 3: サービス層（通知、音声認識、エクスポート、日付ユーティリティ）
+  - Step 4: UI層（全コンポーネント、全画面、AppNavigator、App.tsx統合）
+- **テスト**: 377テスト全パス、ブランチカバレッジ90.65%（目標80%達成）
 
-### 🔄 進行中
-- **Phase 4 Step 4**: UI層の実装
-
-### ✅ 解決済み: React Nativeテスト環境問題
-
-**問題**: Expo SDK 54 Winter runtimeとjest-expoの互換性問題
-
-**解決方法**:
-1. jest.config.js に `preset: 'jest-expo'` を設定
-2. Jestを29.7.0にダウングレード（expo install --checkの推奨）
-3. @types/jestを29.5.14にダウングレード
-4. transformIgnorePatternsは既に適切に設定済み
-
-**結果**:
-- ✅ Button.test.tsx が正常に実行可能（10テスト全てパス）
-- ✅ 全143テストがパス（133 + 10件のButtonテスト）
-- ✅ React Nativeコンポーネントのテスト環境が構築完了
-
----
-
-## 🎯 次回セッションの優先タスク
-
-### ✅ Task 1: React Nativeテスト環境の修正 - 完了済み
-
-Button.test.tsx が正常に実行されることを確認済み。
-
-### ~~Task 2: TextInputコンポーネントの実装~~ → **次のタスク**
-
-### Task 2: TextInputコンポーネントの実装
-
-#### 仕様（計画ドキュメントより）
-
-```typescript
-interface TextInputProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-  multiline?: boolean;
-  label?: string;
-  error?: string;
-  testID?: string;
-}
-```
-
-#### テストケース（詳細は計画参照）
-- プレースホルダー表示
-- 入力値の制御
-- テキスト変更イベント
-- ラベル表示
-- エラーメッセージ表示
-- multiline対応
-
-#### 実装順序（TDD）
-1. RED: テスト作成 (`__tests__/components/TextInput.test.tsx`)
-2. GREEN: 最小限の実装
-3. REFACTOR: スタイル整理、エラー表示改善
-
-#### 成果物
-- [ ] `src/components/TextInput.tsx`
-- [ ] `__tests__/components/TextInput.test.tsx`
-- [ ] テストが全てパス
-
----
-
-### Task 2: 基本UIコンポーネントの完成
-
-TextInputとButton以外に必要な基本コンポーネント：
-
-#### 3.1 Card コンポーネント
-- 日記エントリー表示用
-- variant: default, elevated
-
-#### 3.2 ListItem コンポーネント
-- 一覧表示用
-- タップ可能
-- 右矢印アイコン
-
-#### 3.3 VoiceInputButton コンポーネント
-- 音声入力のトリガー
-- 録音中の視覚フィードバック
-- マイクアイコン
-
-各コンポーネントはTDDで実装する。
-
----
-
-### Task 3: 画面コンポーネントの実装開始
-
-#### 3.1 HomeScreen（日記一覧画面）
-**優先度**: 🔴 高
-
-**機能要件**:
-- 日記エントリーの一覧表示
-- 日付でソート（新しい順）
-- エントリータップで詳細画面へ遷移
-- 新規作成ボタン
-
-**使用するコンポーネント**:
-- Card
-- ListItem
-- Button（FAB: Floating Action Button）
-
-**使用するストア**:
-- diaryStore (エントリー一覧取得)
-
-**テスト**:
-- 一覧表示のレンダリング
-- エントリータップ時のナビゲーション
-- 新規作成ボタンの動作
-
-#### 3.2 DiaryEntryScreen（日記入力画面）
-**優先度**: 🔴 高
-
-**機能要件**:
-- 質問の順次表示
-- テキスト入力 or 音声入力
-- 回答の保存
-- 入力中の下書き保存
-
-**使用するコンポーネント**:
-- TextInput
-- VoiceInputButton
-- Button
-
-**使用するストア**:
-- diaryStore (保存)
-- questionStore (質問取得)
-
-**テスト**:
-- 質問の表示
-- 回答入力
-- 保存処理
-- 音声入力切替
-
-#### 3.3 SettingsScreen（設定画面）
-**優先度**: 🟡 中
-
-**機能要件**:
-- リマインダー時間設定
-- 質問のカスタマイズ
-- エクスポート機能
-- ダークモード切替
-
-**使用するストア**:
-- settingsStore
-- questionStore
-
----
-
-## 📂 実装ファイル一覧（予定）
-
-### 次セッションで作成予定
+### 実装済みファイル
 
 ```
 src/
 ├── components/
-│   ├── Button.tsx               ✅ 完了
-│   ├── TextInput.tsx            ⏳ 次回
-│   ├── Card.tsx                 ⏳ 次回
-│   ├── ListItem.tsx             ⏳ 次回
-│   └── VoiceInputButton.tsx     ⏳ 次回
-│
+│   ├── Button.tsx               ✅
+│   ├── TextInput.tsx            ✅
+│   ├── Card.tsx                 ✅
+│   ├── ListItem.tsx             ✅
+│   └── VoiceInputButton.tsx     ✅
 ├── screens/
-│   ├── HomeScreen.tsx           ⏳ 次回
-│   ├── DiaryEntryScreen.tsx     ⏳ 次回
-│   └── SettingsScreen.tsx       ⏳ 次回（優先度低）
-│
-└── navigation/
-    └── AppNavigator.tsx         ⏳ 次回
-
-__tests__/
-├── components/
-│   ├── Button.test.tsx          ✅ 完了（実行保留）
-│   ├── TextInput.test.tsx       ⏳ 次回
-│   ├── Card.test.tsx            ⏳ 次回
-│   ├── ListItem.test.tsx        ⏳ 次回
-│   └── VoiceInputButton.test.tsx ⏳ 次回
-│
-└── screens/
-    ├── HomeScreen.test.tsx      ⏳ 次回
-    └── DiaryEntryScreen.test.tsx ⏳ 次回
+│   ├── HomeScreen.tsx           ✅
+│   ├── DiaryInputScreen.tsx     ✅
+│   ├── DiaryDetailScreen.tsx    ✅
+│   └── SettingsScreen.tsx       ✅
+├── navigation/
+│   └── AppNavigator.tsx         ✅
+├── stores/
+│   ├── diaryStore.ts            ✅
+│   ├── questionStore.ts         ✅
+│   └── settingsStore.ts         ✅
+├── services/
+│   ├── storage.ts               ✅
+│   ├── notification.ts          ✅
+│   ├── speech.ts                ✅
+│   └── export.ts                ✅
+├── types/
+│   ├── index.ts                 ✅
+│   └── navigation.ts            ✅
+├── utils/
+│   └── date.ts                  ✅
+├── constants/
+│   └── defaultQuestions.ts      ✅
+└── App.tsx                      ✅
 ```
 
 ---
 
-## 🔄 開発フロー（推奨順序）
+## Phase 5: 受け入れテスト
 
-### 1日目: テスト環境修正 + TextInput
-1. React Nativeテスト環境の修正（2-3時間）
-2. TextInputコンポーネントの実装（TDD）
-3. Button/TextInputのテスト実行確認
+### 概要
+ユーザーが実際にアプリを操作し、要件を満たしているか確認する。
 
-### 2日目: 基本UIコンポーネント
-1. Card コンポーネント（TDD）
-2. ListItem コンポーネント（TDD）
-3. VoiceInputButton コンポーネント（TDD）
+### 準備タスク
 
-### 3日目: 画面実装開始
-1. ナビゲーション設定
-2. HomeScreen 実装（TDD）
-3. DiaryEntryScreen 実装（TDD）
+1. **エミュレータ/実機での動作確認**
+   - `npx expo start` でアプリ起動
+   - 画面遷移の確認
+   - 各画面の表示確認
 
-### 4日目: 統合・動作確認
-1. 画面遷移のテスト
-2. エミュレータでの動作確認
-3. 修正・リファクタリング
+2. **受け入れテスト項目**
+
+#### リマインダー機能
+- [ ] 指定した時間に通知が届くか
+- [ ] 複数の時間を設定できるか
+- [ ] 通知をタップするとアプリが開くか
+
+#### 日記入力
+- [ ] 質問が順番に表示されるか
+- [ ] 回答を入力・保存できるか
+- [ ] 音声入力で文字が入力されるか
+- [ ] 音声とテキスト入力を切り替えられるか
+
+#### 日記閲覧
+- [ ] 過去の日記一覧が表示されるか
+- [ ] 日記の詳細を閲覧できるか
+- [ ] 日記を編集できるか
+- [ ] 日記を削除できるか
+
+#### 設定
+- [ ] リマインダー時間を変更できるか
+- [ ] ダークモード切替ができるか
+- [ ] データをエクスポートできるか
+
+#### 全体的なUX
+- [ ] 操作は直感的か
+- [ ] 動作は十分に速いか
+- [ ] エラー時のメッセージは分かりやすいか
+
+### フィードバックサイクル
+```
+1. ユーザーがアプリを操作
+2. 問題点・改善点をフィードバック
+3. Claudeが修正（TDDサイクルで）
+4. テスト通過を確認
+5. コミット
+6. → 1に戻る（問題がなくなるまで）
+```
 
 ---
 
-## 📝 メモ・気づき
+## 関連リンク
 
-### テスト環境について
-- jest-expoのプリセットがExpo SDK 54と衝合している
-- 一時的にts-jestベースの設定に戻すことでサービス/ストア層のテストは動作
-- UIコンポーネントにはReact Nativeモジュールの適切な変換設定が必要
-
-### コード品質
-- 現在のカバレッジ: 93.05%（目標80%を達成）
-- サービス層: 99.21%
-- ストア層: 85.29%（カバレッジ向上の余地あり）
-
-### TDDの実践
-- RED → GREEN → REFACTORサイクルを厳守
-- CodeRabbitのレビューで品質向上
-- リファクタリング段階での設計改善が効果的
-
----
-
-## 🔗 関連リンク
-
-- **PR #7**: https://github.com/hawkymisc/dialized-monologue/pull/7
-- **Issue #6**: 進捗報告
 - **PLAN.md**: 全体計画
 - **SPEC.md**: 詳細仕様
+- **GitHub**: https://github.com/hawkymisc/dialized-monologue
 
 ---
 
-## ✅ チェックリスト（次回セッション開始時）
-
-- [ ] PR #7がマージされているか確認
-- [ ] mainブランチをpull
-- [ ] 新しいfeatureブランチを作成（例: `feature/ui-components`）
-- [ ] React Nativeテスト環境の修正から開始
-- [ ] 各タスク完了後、こまめにコミット
-- [ ] TodoWriteツールでタスク管理
-- [ ] 5コミットごとに進捗報告Issue作成
-
----
-
-🤖 Generated with Claude Code
+Generated with Claude Code
