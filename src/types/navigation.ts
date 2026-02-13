@@ -11,6 +11,10 @@ export type RootStackParamList = {
   DiaryInput: undefined;
   DiaryDetail: { entryId: string };
   Settings: undefined;
+  ReminderSettings: undefined;
+  QuestionSettings: undefined;
+  DataManagement: undefined;
+  DisplaySettings: undefined;
 };
 
 /**
@@ -20,3 +24,7 @@ export type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>
 export type DiaryInputScreenProps = NativeStackScreenProps<RootStackParamList, 'DiaryInput'>;
 export type DiaryDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'DiaryDetail'>;
 export type SettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'Settings'>;
+export type ReminderSettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'ReminderSettings'>;
+export type QuestionSettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'QuestionSettings'>;
+export type DataManagementScreenProps = NativeStackScreenProps<RootStackParamList, 'DataManagement'>;
+export type DisplaySettingsScreenProps = NativeStackScreenProps<RootStackParamList, 'DisplaySettings'>;

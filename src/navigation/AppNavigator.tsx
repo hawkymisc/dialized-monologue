@@ -16,6 +16,10 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { DiaryInputScreen } from '../screens/DiaryInputScreen';
 import { DiaryDetailScreen } from '../screens/DiaryDetailScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
+import { ReminderSettingsScreen } from '../screens/ReminderSettingsScreen';
+import { QuestionSettingsScreen } from '../screens/QuestionSettingsScreen';
+import { DataManagementScreen } from '../screens/DataManagementScreen';
+import { DisplaySettingsScreen } from '../screens/DisplaySettingsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -42,6 +46,26 @@ export const AppNavigator: React.FC = () => {
           name="Settings"
           component={SettingsScreen}
           options={{ title: '設定' }}
+        />
+        <Stack.Screen
+          name="ReminderSettings"
+          component={ReminderSettingsScreen}
+          options={{ title: 'リマインダー設定' }}
+        />
+        <Stack.Screen
+          name="QuestionSettings"
+          component={QuestionSettingsScreen}
+          options={{ title: '質問設定' }}
+        />
+        <Stack.Screen
+          name="DataManagement"
+          component={DataManagementScreen}
+          options={{ title: 'データ管理' }}
+        />
+        <Stack.Screen
+          name="DisplaySettings"
+          component={DisplaySettingsScreen}
+          options={{ title: '表示設定' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

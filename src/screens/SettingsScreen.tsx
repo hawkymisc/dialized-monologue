@@ -17,7 +17,10 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ListItem } from '../components/ListItem';
+import type { RootStackParamList } from '../types/navigation';
 
 // カラー定数
 const COLORS = {
@@ -43,18 +46,15 @@ type SettingScreen =
   | 'DataManagement'
   | 'DisplaySettings';
 
-interface SettingsScreenProps {
-  onNavigate?: (screen: SettingScreen) => void;
-}
+type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Settings'>;
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onNavigate }) => {
+export const SettingsScreen: React.FC = () => {
+  const navigation = useNavigation<SettingsNavigationProp>();
+
   const handleNavigate = (screen: SettingScreen) => {
     try {
-      if (onNavigate) {
-        onNavigate(screen);
-      }
+      navigation.navigate(screen);
     } catch (error) {
-      // エラーが発生してもクラッシュしない
       console.error('Navigation error:', error);
     }
   };
