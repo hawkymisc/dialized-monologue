@@ -11,16 +11,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-
-// カラー定数
-const COLORS = {
-  background: '#FFFFFF',
-  pressed: '#F0F0F0',
-  border: '#E0E0E0',
-  title: '#000000',
-  subtitle: '#666666',
-  arrow: '#999999',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 export interface ListItemProps {
   title: string;                // メインテキスト（必須）
@@ -41,6 +32,8 @@ export const ListItem: React.FC<ListItemProps> = ({
   testID,
   accessibilityLabel = title,
 }) => {
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const isDisabled = disabled;
 
   const handlePress = () => {
@@ -88,42 +81,42 @@ const SUBTITLE_FONT_SIZE = 14;
 const ARROW_FONT_SIZE = 20;
 const DISABLED_OPACITY = 0.5;
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     minHeight: MIN_HEIGHT,
     paddingHorizontal: PADDING_HORIZONTAL,
     paddingVertical: PADDING_VERTICAL,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.cardBackground,
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
+    borderBottomColor: theme.border,
+  } as ViewStyle,
   container_disabled: {
     opacity: DISABLED_OPACITY,
-  },
+  } as ViewStyle,
   container_pressed: {
-    backgroundColor: COLORS.pressed,
-  },
+    backgroundColor: theme.selected,
+  } as ViewStyle,
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
+  } as ViewStyle,
   textContainer: {
     flex: 1,
-  },
+  } as ViewStyle,
   title: {
     fontSize: TITLE_FONT_SIZE,
     fontWeight: '600',
-    color: COLORS.title,
+    color: theme.text,
     marginBottom: 4,
-  },
+  } as TextStyle,
   subtitle: {
     fontSize: SUBTITLE_FONT_SIZE,
-    color: COLORS.subtitle,
-  },
+    color: theme.textSecondary,
+  } as TextStyle,
   arrow: {
     fontSize: ARROW_FONT_SIZE,
-    color: COLORS.arrow,
+    color: theme.textSecondary,
     marginLeft: 8,
-  },
+  } as TextStyle,
 });

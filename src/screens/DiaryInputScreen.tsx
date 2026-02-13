@@ -25,17 +25,7 @@ import type { RootStackParamList } from '../types/navigation';
 import { Button } from '../components/Button';
 import { TextInput } from '../components/TextInput';
 import { DiaryEntry, DiaryAnswer } from '../types';
-
-// カラー定数
-const COLORS = {
-  background: '#F5F5F5',
-  white: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-  primary: '#007AFF',
-  selected: '#E3F2FD',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -58,6 +48,8 @@ type DiaryInputNavigationProp = NativeStackNavigationProp<RootStackParamList, 'D
 
 export const DiaryInputScreen: React.FC = () => {
   const navigation = useNavigation<DiaryInputNavigationProp>();
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const { questions, isLoading, error, loadQuestions, getActiveQuestions } =
     useQuestionStore();
   const { addEntry } = useDiaryStore();
@@ -239,10 +231,10 @@ export const DiaryInputScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   } as ViewStyle,
   contentContainer: {
     padding: SPACING.container,
@@ -250,18 +242,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.questionBottom,
   } as TextStyle,
   progress: {
     fontSize: FONT_SIZES.progress,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     marginBottom: SPACING.progressBottom,
   } as TextStyle,
   question: {
     fontSize: FONT_SIZES.question,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.questionBottom,
   } as TextStyle,
   ratingContainer: {
@@ -277,13 +269,13 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   loadingText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: 20,
   } as TextStyle,
   errorText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.error,
+    color: theme.error,
     textAlign: 'center',
     marginTop: 20,
   } as TextStyle,

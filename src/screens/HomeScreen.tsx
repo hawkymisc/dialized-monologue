@@ -23,17 +23,9 @@ import { Button } from '../components/Button';
 import { ListItem } from '../components/ListItem';
 import { DiaryEntry } from '../types';
 import type { RootStackParamList } from '../types/navigation';
+import { useThemeColors, ThemeColors } from '../theme';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
-
-// カラー定数
-const COLORS = {
-  background: '#F5F5F5',
-  white: '#FFFFFF',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-};
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -61,6 +53,8 @@ export const HomeScreen: React.FC = () => {
     loadEntries,
     getEntryByDate,
   } = useDiaryStore();
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
 
   useEffect(() => {
     Promise.resolve(loadEntries()).catch(() => {
@@ -151,10 +145,10 @@ export const HomeScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
     padding: SPACING.container,
   } as ViewStyle,
   header: {
@@ -166,7 +160,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
   } as TextStyle,
   section: {
     marginBottom: SPACING.sectionBottom,
@@ -174,24 +168,24 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZES.sectionTitle,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.sectionTitleBottom,
   } as TextStyle,
   loadingText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: SPACING.emptyTop,
   } as TextStyle,
   errorText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.error,
+    color: theme.error,
     textAlign: 'center',
     marginTop: SPACING.emptyTop,
   } as TextStyle,
   emptyText: {
     fontSize: FONT_SIZES.caption,
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     textAlign: 'center',
     marginTop: SPACING.emptyTop,
   } as TextStyle,

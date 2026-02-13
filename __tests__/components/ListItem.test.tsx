@@ -5,6 +5,44 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { render, fireEvent } from '@testing-library/react-native';
 import { ListItem } from '../../src/components/ListItem';
+import { LIGHT_THEME } from '../../src/theme';
+
+// テーマをモック
+jest.mock('../../src/theme', () => ({
+  useThemeColors: jest.fn(() => ({
+    background: '#F5F5F5',
+    cardBackground: '#FFFFFF',
+    text: '#000000',
+    textSecondary: '#666666',
+    border: '#E0E0E0',
+    primary: '#007AFF',
+    error: '#FF3B30',
+    white: '#FFFFFF',
+    selected: '#E3F2FD',
+  })),
+  LIGHT_THEME: {
+    background: '#F5F5F5',
+    cardBackground: '#FFFFFF',
+    text: '#000000',
+    textSecondary: '#666666',
+    border: '#E0E0E0',
+    primary: '#007AFF',
+    error: '#FF3B30',
+    white: '#FFFFFF',
+    selected: '#E3F2FD',
+  },
+  DARK_THEME: {
+    background: '#1A1A1A',
+    cardBackground: '#2A2A2A',
+    text: '#FFFFFF',
+    textSecondary: '#AAAAAA',
+    border: '#3A3A3A',
+    primary: '#0A84FF',
+    error: '#FF453A',
+    white: '#1A1A1A',
+    selected: '#1E3A5F',
+  },
+}));
 
 describe('ListItem', () => {
   it('titleを表示する', () => {
@@ -90,7 +128,7 @@ describe('ListItem', () => {
     const style = StyleSheet.flatten(arrowElement.props.style);
 
     expect(style.fontSize).toBe(20);
-    expect(style.color).toBe('#999999');
+    expect(style.color).toBe(LIGHT_THEME.textSecondary);
   });
 
   it('右矢印を非表示にする（showArrow=false時）', () => {

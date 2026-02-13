@@ -16,17 +16,7 @@ import {
 } from 'react-native';
 import { useDiaryStore } from '../stores/diaryStore';
 import { ExportService } from '../services/export';
-
-// カラー定数
-const COLORS = {
-  background: '#F5F5F5',
-  text: '#000000',
-  textSecondary: '#666666',
-  error: '#FF3B30',
-  danger: '#FF3B30',
-  buttonBackground: '#FFFFFF',
-  buttonBorder: '#E0E0E0',
-};
+import { useThemeColors, ThemeColors } from '../theme';
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -45,6 +35,8 @@ const SPACING = {
 
 export const DataManagementScreen: React.FC = () => {
   const { entries, deleteEntry } = useDiaryStore();
+  const theme = useThemeColors();
+  const styles = createStyles(theme);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -161,7 +153,7 @@ export const DataManagementScreen: React.FC = () => {
         <ActivityIndicator
           testID="loading-indicator"
           size="large"
-          color={COLORS.text}
+          color={theme.text}
           style={styles.loading}
         />
       )}
@@ -176,10 +168,10 @@ export const DataManagementScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   } as ViewStyle,
   contentContainer: {
     padding: SPACING.container,
@@ -187,7 +179,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.titleBottom,
   } as TextStyle,
   section: {
@@ -196,13 +188,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: FONT_SIZES.body,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: theme.textSecondary,
     marginBottom: SPACING.itemGap,
   } as TextStyle,
   button: {
-    backgroundColor: COLORS.buttonBackground,
+    backgroundColor: theme.cardBackground,
     borderWidth: 1,
-    borderColor: COLORS.buttonBorder,
+    borderColor: theme.border,
     borderRadius: 8,
     padding: SPACING.container,
     marginBottom: SPACING.itemGap,
@@ -210,13 +202,13 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   buttonText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.text,
+    color: theme.text,
     fontWeight: '500',
   } as TextStyle,
   dangerButton: {
-    backgroundColor: COLORS.buttonBackground,
+    backgroundColor: theme.cardBackground,
     borderWidth: 1,
-    borderColor: COLORS.danger,
+    borderColor: theme.error,
     borderRadius: 8,
     padding: SPACING.container,
     marginBottom: SPACING.itemGap,
@@ -224,7 +216,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   dangerButtonText: {
     fontSize: FONT_SIZES.body,
-    color: COLORS.danger,
+    color: theme.error,
     fontWeight: '500',
   } as TextStyle,
   loading: {
@@ -232,7 +224,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
   errorText: {
     fontSize: FONT_SIZES.caption,
-    color: COLORS.error,
+    color: theme.error,
     marginTop: SPACING.itemGap,
     textAlign: 'center',
   } as TextStyle,
