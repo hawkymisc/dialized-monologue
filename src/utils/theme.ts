@@ -38,6 +38,6 @@ export const DARK_THEME: ThemeColors = {
  * 現在のテーマ色を取得するフック
  */
 export const useTheme = (): ThemeColors => {
-  const isDarkMode = useSettingsStore((state) => state.settings.isDarkMode);
-  return isDarkMode ? DARK_THEME : LIGHT_THEME;
+  const settings = useSettingsStore((state) => state.settings);
+  return settings.isDarkMode ? DARK_THEME : LIGHT_THEME;
 };

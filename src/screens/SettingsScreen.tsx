@@ -21,12 +21,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ListItem } from '../components/ListItem';
 import type { RootStackParamList } from '../types/navigation';
-
-// カラー定数
-const COLORS = {
-  background: '#F5F5F5',
-  text: '#000000',
-};
+import { useTheme } from '../utils/theme';
 
 // フォントサイズ定数
 const FONT_SIZES = {
@@ -50,6 +45,8 @@ type SettingsNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Set
 
 export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<SettingsNavigationProp>();
+  const theme = useTheme();
+  const styles = createStyles(theme);
 
   const handleNavigate = (screen: SettingScreen) => {
     try {
@@ -103,10 +100,10 @@ export const SettingsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: ReturnType<typeof useTheme>) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.background,
   } as ViewStyle,
   contentContainer: {
     padding: SPACING.container,
@@ -114,7 +111,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: COLORS.text,
+    color: theme.text,
     marginBottom: SPACING.titleBottom,
   } as TextStyle,
 });
