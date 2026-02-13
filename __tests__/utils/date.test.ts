@@ -61,6 +61,49 @@ describe('date utils', () => {
     it('部分的に正しい形式でもエラーをスローする', () => {
       expect(() => parseDate('2025-01')).toThrow();
     });
+
+    describe('境界値・異常系', () => {
+      it('"2024-02-30" は形式は正しいが日付として無効でエラーをスローする', () => {
+        expect(() => parseDate('2024-02-30')).toThrow('Invalid date');
+      });
+
+      it('"2024-13-01" は月が13で無効でエラーをスローする', () => {
+        expect(() => parseDate('2024-13-01')).toThrow('Invalid date');
+      });
+
+      it('"2024-00-01" は月が0で無効でエラーをスローする', () => {
+        expect(() => parseDate('2024-00-01')).toThrow('Invalid date');
+      });
+
+      it('"2024-01-32" は日が32で無効でエラーをスローする', () => {
+        expect(() => parseDate('2024-01-32')).toThrow('Invalid date');
+      });
+
+      it('"2023-02-29" は閏年ではないためエラーをスローする', () => {
+        expect(() => parseDate('2023-02-29')).toThrow('Invalid date');
+      });
+
+      it('"2024-02-29" は閏年なので正常にパースされる', () => {
+        const date = parseDate('2024-02-29');
+        expect(date).toBeInstanceOf(Date);
+        expect(date.getFullYear()).toBe(2024);
+        expect(date.getMonth()).toBe(1); // 0-indexed
+        expect(date.getDate()).toBe(29);
+      });
+
+      it('"0000-01-01" は年が0でも動作する', () => {
+        const date = parseDate('0000-01-01');
+        expect(date).toBeInstanceOf(Date);
+      });
+
+      it('"9999-12-31" は最大日付で正常にパースされる', () => {
+        const date = parseDate('9999-12-31');
+        expect(date).toBeInstanceOf(Date);
+        expect(date.getFullYear()).toBe(9999);
+        expect(date.getMonth()).toBe(11);
+        expect(date.getDate()).toBe(31);
+      });
+    });
   });
 
   describe('isToday', () => {
