@@ -5,12 +5,7 @@
 import React, { useEffect } from 'react';
 import { View, Text, Switch, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useSettingsStore } from '../stores/settingsStore';
-
-const COLORS = {
-  background: '#F5F5F5',
-  text: '#000000',
-  textSecondary: '#666666',
-};
+import { useTheme } from '../utils/theme';
 
 const FONT_SIZES = {
   title: 24,
@@ -26,10 +21,13 @@ const SPACING = {
 
 export const DisplaySettingsScreen: React.FC = () => {
   const { settings, loadSettings, setDarkMode } = useSettingsStore();
+  const theme = useTheme();
 
   useEffect(() => {
     loadSettings();
   }, []);
+
+  const styles = createStyles(theme);
 
   return (
     <View style={styles.container} testID="display-settings-screen">
@@ -50,26 +48,28 @@ export const DisplaySettingsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-    padding: SPACING.container,
-  } as ViewStyle,
-  title: {
-    fontSize: FONT_SIZES.title,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: SPACING.titleBottom,
-  } as TextStyle,
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: SPACING.itemGap,
-  } as ViewStyle,
-  label: {
-    fontSize: FONT_SIZES.body,
-    color: COLORS.text,
-  } as TextStyle,
-});
+const createStyles = (theme: ReturnType<typeof useTheme>) => {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+      padding: SPACING.container,
+    } as ViewStyle,
+    title: {
+      fontSize: FONT_SIZES.title,
+      fontWeight: '600',
+      color: theme.text,
+      marginBottom: SPACING.titleBottom,
+    } as TextStyle,
+    settingRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: SPACING.itemGap,
+    } as ViewStyle,
+    label: {
+      fontSize: FONT_SIZES.body,
+      color: theme.text,
+    } as TextStyle,
+  });
+};
