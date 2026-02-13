@@ -1,19 +1,51 @@
 /**
  * DisplaySettingsScreen
  * 表示設定画面 - ダークモード設定
- *
- * TODO: Phase 5Aで完全実装
  */
-import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, Switch, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { useSettingsStore } from '../stores/settingsStore';
+
+const COLORS = {
+  background: '#F5F5F5',
+  text: '#000000',
+  textSecondary: '#666666',
+};
+
+const FONT_SIZES = {
+  title: 24,
+  body: 16,
+  caption: 14,
+};
+
+const SPACING = {
+  container: 16,
+  titleBottom: 24,
+  itemGap: 12,
+};
 
 export const DisplaySettingsScreen: React.FC = () => {
+  const { settings, loadSettings, setDarkMode } = useSettingsStore();
+
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
   return (
     <View style={styles.container} testID="display-settings-screen">
       <Text style={styles.title} accessibilityRole="header">
         表示設定
       </Text>
-      <Text style={styles.placeholder}>実装予定</Text>
+      <View style={styles.settingRow}>
+        <Text style={styles.label}>ダークモード</Text>
+        <Switch
+          testID="dark-mode-switch"
+          value={settings.isDarkMode}
+          onValueChange={(value: boolean) => setDarkMode(value)}
+          accessibilityLabel="ダークモード切り替え"
+          accessibilityRole="switch"
+        />
+      </View>
     </View>
   );
 };
@@ -21,19 +53,23 @@ export const DisplaySettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    padding: 16,
+    backgroundColor: COLORS.background,
+    padding: SPACING.container,
   } as ViewStyle,
   title: {
-    fontSize: 24,
+    fontSize: FONT_SIZES.title,
     fontWeight: '600',
-    color: '#000000',
-    marginBottom: 24,
+    color: COLORS.text,
+    marginBottom: SPACING.titleBottom,
   } as TextStyle,
-  placeholder: {
-    fontSize: 16,
-    color: '#666666',
-    textAlign: 'center',
-    marginTop: 20,
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: SPACING.itemGap,
+  } as ViewStyle,
+  label: {
+    fontSize: FONT_SIZES.body,
+    color: COLORS.text,
   } as TextStyle,
 });
